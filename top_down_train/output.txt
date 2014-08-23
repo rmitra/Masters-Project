@@ -1,0 +1,129 @@
+[1;33m[pcl::PLYReader] ../../ply_data/h_14.ply:13: property 'list uint8 int32 vertex_indices' of element 'face' is not handled
+[0;mNormals calculated!!
+The grid dimensions are 36  16  7
+Extracted model name :h_14
+Tree Itr :1
+For Box : 0 0 0 36 16 7
+Miss Count :222
+RMSE 3D: 0.59196
+For plane: 0
+Begin : 1 End : 5
+RMSE CUT INDEX :-1
+Final gain of plane XY  0.729167
+For plane: 1
+Begin : 1 End : 14
+RMSE CUT INDEX :-1
+Final gain of plane XZ  0.77381
+For plane: 2
+Begin : 1 End : 34
+RMSE CUT INDEX :-1
+Final gain of plane YZ  0.65873
+Plane: 2  cutPoint: 28
+Block 1: 0 0 2 29 16 7
+Block 2: 29 0 0 36 8 6
+
+Tree Itr :3
+For Box : 29 0 0 36 8 6
+Miss Count :2
+RMSE 3D: 0.125491
+Tree Itr :2
+For Box : 0 0 2 29 16 7
+Miss Count :157
+RMSE 3D: 0.46958
+For plane: 0
+Begin : 1 End : 3
+RMSE CUT INDEX :-1
+Final gain of plane XY  0.9
+For plane: 1
+Begin : 1 End : 14
+RMSE CUT INDEX :-1
+Final gain of plane XZ  0.857759
+For plane: 2
+Begin : 1 End : 27
+RMSE CUT INDEX :-1
+Final gain of plane YZ  0.867241
+Plane: 1  cutPoint: 12
+Block 1: 0 0 2 29 13 7
+Block 2: 7 13 2 14 16 7
+
+Tree Itr :5
+For Box : 7 13 2 14 16 7
+Miss Count :0
+RMSE 3D: 0
+Tree Itr :4
+For Box : 0 0 2 29 13 7
+Miss Count :138
+RMSE 3D: 0.451821
+For plane: 0
+Begin : 1 End : 3
+RMSE CUT INDEX :-1
+Final gain of plane XY  0.876923
+For plane: 1
+Begin : 1 End : 11
+RMSE CUT INDEX :-1
+Final gain of plane XZ  0.870557
+For plane: 2
+Begin : 1 End : 27
+RMSE CUT INDEX :-1
+Final gain of plane YZ  0.892308
+Plane: 1  cutPoint: 3
+Block 1: 1 0 4 29 4 7
+Block 2: 0 4 2 29 13 7
+
+Tree Itr :9
+For Box : 0 4 2 29 13 7
+Miss Count :75
+RMSE 3D: 0.40511
+For plane: 0
+Begin : 1 End : 3
+RMSE CUT INDEX :-1
+Final gain of plane XY  0.951724
+For plane: 1
+Begin : 1 End : 7
+RMSE CUT INDEX :-1
+Final gain of plane XZ  0.924904
+For plane: 2
+Begin : 1 End : 27
+RMSE CUT INDEX :-1
+Final gain of plane YZ  0.887356
+Plane: 2  cutPoint: 6
+Block 1: 0 4 3 7 12 6
+Block 2: 7 4 2 29 13 7
+
+Tree Itr :19
+For Box : 7 4 2 29 13 7
+Miss Count :45
+RMSE 3D: 0.355534
+For plane: 0
+Begin : 1 End : 3
+RMSE CUT INDEX :-1
+Final gain of plane XY  0.909091
+For plane: 1
+Begin : 1 End : 7
+RMSE CUT INDEX :-1
+Final gain of plane XZ  0.915152
+For plane: 2
+Begin : 1 End : 20
+RMSE CUT INDEX :-1
+Final gain of plane YZ  0.909091
+Plane: 0  cutPoint: 1
+Block 1: 12 4 2 29 13 4
+Block 2: 7 4 4 29 13 7
+
+Tree Itr :39
+For Box : 7 4 4 29 13 7
+Miss Count :0
+RMSE 3D: 0
+Tree Itr :38
+For Box : 12 4 2 29 13 4
+Miss Count :0
+RMSE 3D: 0
+Tree Itr :18
+For Box : 0 4 3 7 12 6
+Miss Count :0
+RMSE 3D: 0
+Tree Itr :8
+For Box : 1 0 4 29 4 7
+Miss Count :0
+RMSE 3D: 0
+BlockList size: 6

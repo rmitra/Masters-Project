@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+project(Pointcloud_Voxelization)
+find_package(PCL 1.7 REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+
+include_directories(${PCL_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
+link_directories(${PCL_LIBRARY_DIRS} )
+add_definitions(${PCL_DEFINITIONS})
+add_executable(box_decomposition main_prog.cpp)
+target_link_libraries(box_decomposition ${PCL_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
+set(CMAKE_CXX_FLAGS "-g ")
