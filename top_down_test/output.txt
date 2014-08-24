@@ -1,0 +1,54 @@
+[1;33m[pcl::PLYReader] ../../ply_data/model24.ply:12: property 'list uint8 int32 vertex_indices' of element 'face' is not handled
+[0;mNormals calculated!!
+The grid dimensions are 226  196  21
+Size of data :220
+For Block :0 0 0 226 196 21
+Parent Name : -1
+Size of cloud of model is 153980
+No instances found :2
+Model Name :   model31  0.9 0.1 0.111111 (squared distance: 0.00113799)
+Model Name :   model25  0.908676 0.0958904 0.105528 (squared distance: 0.00172699)
+Descriptor cloud size :10034
+Descriptor Size of Scene : 10034
+Match Corr Size: 0
+No. Cluster :0
+Done for checking 0
+Match Corr Size: 9945
+No. Cluster :59
+Done for checking 1
+Miss Count :6747
+RMSE 3D: 1.7871
+Miss Count :0
+For plane: 0
+Begin : 1 End : 19
+index : 4 l_err: 0.122549 u_err: 1.648
+index : 5 l_err: 0.171259 u_err: 1.48164
+index : 6 l_err: 0.291846 u_err: 1.34436
+index : 7 l_err: 0.37142 u_err: 1.18217
+index : 8 l_err: 0.504766 u_err: 1.05223
+index : 9 l_err: 0.606007 u_err: 0.89668
+index : 10 l_err: 0.750089 u_err: 0.779307
+index : 11 l_err: 0.863588 u_err: 0.631799
+index : 12 l_err: 1.01342 u_err: 0.529034
+index : 13 l_err: 1.13829 u_err: 0.391137
+index : 14 l_err: 1.29466 u_err: 0.308491
+index : 15 l_err: 1.42687 u_err: 0.181173
+index : 16 l_err: 1.58745 u_err: 0.129687
+cut_index :4 less_vol :0
+MAX RMSE SECOND DERIVATIVE :0.122549
+RMSE CUT INDEX :4
+Final gain of plane XY  0.122549
+For plane: 1
+Begin : 1 End : 194
+RMSE CUT INDEX :-1
+Final gain of plane XZ  0.759527
+For plane: 2
+Begin : 1 End : 224
+RMSE CUT INDEX :-1
+Final gain of plane YZ  0.705707
+Plane: 2  cutPoint: 83
+Parent :0 0 0 226 196 21
+Final cut: 83Plane: 2
+Block 1: 0 47 0 84 149 21
+Block 2: 84 0 0 142 132 21
+

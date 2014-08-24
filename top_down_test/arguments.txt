@@ -1,0 +1,5 @@
+0.98
+0.01
+0.2
+1
+../../top_down_train/aspect_training.txt
