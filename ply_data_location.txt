@@ -1,2 +1,0 @@
-The .ply data repository can downloaded from the given link
-
