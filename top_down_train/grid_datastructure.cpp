@@ -119,6 +119,7 @@ class grid {
 		
 			//cerr<<"$$$$$$$"<<(int)( (maxPoint.z - minPoint.z)/resolution );
 		
+			cerr<<"Created Grid with dimensions "<<length<<"  "<<width<<"  "<<height<<"\n";
 		}
 		
 		grid(double res, pcl::PointXYZ minPoint, pcl::PointXYZ maxPoint){
@@ -138,6 +139,7 @@ class grid {
 					data[i][j] = new grid_element[height];
 			}		
 				
+			cerr<<"Created Grid with dimensions "<<length<<"  "<<width<<"  "<<height<<"\n";
 		
 			ref_point = minPoint; 	
 		}
@@ -160,6 +162,7 @@ class grid {
 			}		
 				
 		
+			cerr<<"Created Grid with dimensions "<<length<<"  "<<width<<"  "<<height<<"\n";
 			ref_point = minPoint; 	
 		}
 		

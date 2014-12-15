@@ -38,7 +38,7 @@ int main(int argc, char **argv){
 	
 	//merge_Block(block_list);
 	
-	cerr<<"No. blocks after merge"<<block_list.size()<<"\n";
+	//cerr<<"No. blocks after merge"<<block_list.size()<<"\n";
 	
 	grid *g_disp;
 	
@@ -51,7 +51,7 @@ int main(int argc, char **argv){
 	g_disp->allocate_points_to_grid(*cloud, *cloud_normals);
 	g_disp->remove_voxels(threshold, false);
 	
-	initialise_parameters(g_disp, resolution, atoi(argv[3]), block_list, g_disp->length, g_disp->width, g_disp->height, min, max);
+	initialise_parameters(g_disp, g, atoi(argv[3]), block_list, min, max);
 	draw_main(argc, argv);	
 	
 	

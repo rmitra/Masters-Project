@@ -18,7 +18,7 @@ vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZRGB>::P
 	
 	fstream fs;
 	
-	fs.open("/home/rahul/Desktop/mtp/codes/top_down_train/arguments.txt", fstream::in);
+	fs.open("../arguments.txt", fstream::in);
 	
 	//cerr<<"Enter GAIN_THRESHOLD: ";
 	fs>>VOL_THRESHOLD;
@@ -29,6 +29,8 @@ vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZRGB>::P
 	double rmse_3d_thresh; 
 	fs>>rmse_3d_thresh;
 	
+	cerr<<"RMSE_TH: "<<rmse_3d_thresh<<"\n";
+
 	int no_steps;
 	fs>>no_steps;
 
@@ -58,8 +60,7 @@ vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZRGB>::P
 	
 	g = setup_grid(resolution, min, max);							// Setup the grid, function defined in voxelization_grid.cpp	
 	
-	cerr<<"The grid dimensions are "<<g->length<<"  "<<g->width<<"  "<<g->height<<"\n";
-	
+		
 	pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_grid;
 	
 	int threshold = 3;											// setting threshold defined in voxelization_grid.cpp
@@ -96,7 +97,7 @@ vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZRGB>::P
 	//}
 	
 	
-	//return tree;
-	return final_list;
+	return tree;
+	//return final_list;
 		
 }

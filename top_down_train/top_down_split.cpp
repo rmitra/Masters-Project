@@ -569,7 +569,9 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 		
 			bool val = partition(g, top, part1, part2, plane, cut_index, kdtree_grid); 
 			
-			 	
+			cerr<<"Val: "<<val<<"\n";			 	
+
+
 			if( val ){
 		
 					//print_aspect_ratio(model_name, top, tree_itr, true, plane, cut_index, part1, part2);

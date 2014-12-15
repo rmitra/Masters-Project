@@ -41,11 +41,14 @@ char mode = 'n' ;
 
 bool show_cloud = false;	
 bool step_wise = false;
+bool show_texture = false;
 
 int l,w,h;
 int x,y,z;
 
 int n, current_n, box_no;
+
+grid *g_disp, *g;
 
 int grid_length, grid_width, grid_height;
 
@@ -86,6 +89,9 @@ class cuboid{
 };
 
 vector<cuboid> c_list;
+vector<cuboid> c_list_texture;
+vector<cuboid> c_list_no_texture;
+
 cuboid gr;
 
 void SpecialKeyPressed(GLint key, GLint x, GLint y) ;
@@ -101,21 +107,28 @@ void init()
 	glShadeModel (GL_SMOOTH);
 }
 
-void set_cuboid_color(grid *g, cuboid &c, int x, int y, int z){
+void set_cuboid_color(grid *_g, cuboid &c, int x, int y, int z){
 
-	if( (g->data[x][y][z]).used ){
-		c.r = g->data[x][y][z].r;
-		c.g = g->data[x][y][z].g;
-		c.b = g->data[x][y][z].b;
+	if( (_g->data[x][y][z]).used ){
+		c.r = _g->data[x][y][z].r;
+		c.g = _g->data[x][y][z].g;
+		c.b = _g->data[x][y][z].b;
 	
 		c.al = 1;
 	}
 	else{
-		c.r = c.g = c.b = 0.0;
-		c.al = 0;
+		c.r = c.g = c.b = 1.0;
+		c.al = 1;
 	}
 }
 
+void set_random_color(cuboid &c){
+	
+	c.r = (GLdouble)(rand()%100)/100.0f;
+	c.g = (GLdouble)(rand()%100)/100.0f;
+	c.b = (GLdouble)(rand()%100)/100.0f;
+	c.al = 1;
+}
 
 
 void set_cuboid_c(cuboid &c, int x, int y, int z, int l, int w, int h){
@@ -128,7 +141,8 @@ void set_cuboid_c(cuboid &c, int x, int y, int z, int l, int w, int h){
 		*/
 		
 		vector<GLdouble> t;
-		
+		for(int i = 0; i<6; i++)
+			c.faces[i].clear();
 		
 		t.push_back(x); t.push_back(y); t.push_back(z);	
 		c.faces[0].push_back(t);
@@ -434,6 +448,7 @@ void set_next_level(){
 	
 			c = cuboid();
 			set_cuboid_c(c, x, y, z, l, w, h);	
+			set_random_color(c);
 			c_list.push_back(c);
 		
 			int temp = tree_q.front();
@@ -446,7 +461,11 @@ void set_next_level(){
 
 }
 
-void initialise_parameters(grid *g, double resolution, GLdouble scale_i, vector<Block> &block_list, int length, int width, int height, pcl::PointXYZ min, pcl::PointXYZ max){
+void initialise_parameters(grid *_g_disp, grid *_g, GLdouble scale_i, vector<Block> &block_list, pcl::PointXYZ min, pcl::PointXYZ max){
+
+	
+	g_disp = _g_disp;
+	g = _g;
 
 	cuboid c;
 	scale = scale_i;
@@ -457,7 +476,7 @@ void initialise_parameters(grid *g, double resolution, GLdouble scale_i, vector<
 	scaley = scaley * scale ;
 	scalez = scalez * scale ;	
 	
-	grid_length = length;	grid_width = width;	grid_height = height;
+	grid_length = g->length; grid_width = g->width; grid_height = g->height;
 	
 	set_cuboid_c(gr, 0, 0, 0, grid_length, grid_width, grid_height);
 	
@@ -465,12 +484,16 @@ void initialise_parameters(grid *g, double resolution, GLdouble scale_i, vector<
 	
 	n = box_no = block_list.size();
 		
+	/*
+
 	for(int i=0; i<n; i++){
+		// For Texture 
+
 		x = block_list[i].x * 3;  y = block_list[i].y * 3;  z = block_list[i].z * 3;
 		l = block_list[i].length * 3;  w = block_list[i].width * 3;  h = block_list[i].height * 3;
 	
 		cerr<<x<<" "<<y<<" "<<z<<"   "<<l<<" "<<w<<" "<<h<<"\n";
-		int v_count = 0;		
+				
 		
 		for(int j = x; j < x + l; j++){
 			for(int k = y; k < y + w; k++){
@@ -478,21 +501,35 @@ void initialise_parameters(grid *g, double resolution, GLdouble scale_i, vector<
 			
 					c = cuboid();
 					set_cuboid_c(c, j, k, m, 1, 1, 1);	
-					set_cuboid_color(g, c, j, k, m);
-					c_list.push_back(c);
-				
-					v_count++;
+					set_cuboid_color(g_disp, c, j, k, m);
+					c_list_texture.push_back(c);
+					
 				}
 			}		
 		}	
 	
 		//cerr<<"V Count: "<<v_count<<"\n";
+		// For non texture 
+
+		x = block_list[i].x;  y = block_list[i].y;  z = block_list[i].z;
+		l = block_list[i].length;  w = block_list[i].width;  h = block_list[i].height;
+
+		c = cuboid();
+		c.r = (GLdouble)(rand()%100)/100.0f;
+		c.g = (GLdouble)(rand()%100)/100.0f;
+		c.b = (GLdouble)(rand()%100)/100.0f;
+		c.al = 1;
+		set_cuboid_c(c, x, y, z, l, w, h);	
+		c_list_no_texture.push_back(c);
+
 	}
 	
+	c_list = c_list_texture;
+
 	cerr<<"C_LIST size: "<<c_list.size()<<"\n";
 	
+	*/
 	
-	/*
 	tree_q.push(1);
 	
 	x = block_list[1].x;  y = block_list[1].y;  z = block_list[1].z;
@@ -500,19 +537,14 @@ void initialise_parameters(grid *g, double resolution, GLdouble scale_i, vector<
 	
 	c = cuboid();
 	set_cuboid_c(c, x, y, z, l, w, h);	
+	set_random_color(c);
 	c_list.push_back(c);
 		
 	n = box_no = 1; 
-	*/
 	
-	double x_diff = max.x - min.x;
-	double y_diff = max.y - min.y;
-	double z_diff = max.z - min.z;
 	
-	pt_scx = resolution;
-	pt_scy = resolution;
-	pt_scz = resolution;
-
+	pt_scx = pt_scy = pt_scz = g->resolution;
+	
 	pt_trx = min.x;
 	pt_try = min.y;
 	pt_trz = min.z;
@@ -612,6 +644,28 @@ void KeyPressed (unsigned char key, int x, int y)
 				glutPostRedisplay();
 				break;	
 				
+			case 't':
+				show_texture = !show_texture;
+				if(show_texture){
+					c_list = c_list_texture;
+					pt_scx = pt_scy = pt_scz = g_disp->resolution;
+
+					grid_length = g_disp->length; grid_width = g_disp->width; grid_height = g_disp->height;
+	
+					set_cuboid_c(gr, 0, 0, 0, grid_length, grid_width, grid_height);
+				}
+				else{
+					c_list = c_list_no_texture;
+					pt_scx = pt_scy = pt_scz = g->resolution;	
+				
+					grid_length = g->length; grid_width = g->width; grid_height = g->height;
+	
+					set_cuboid_c(gr, 0, 0, 0, grid_length, grid_width, grid_height);
+
+				}
+
+				break;
+
 			default :
 					break;
 					
@@ -651,8 +705,8 @@ void SpecialKeyPressed(GLint key, GLint x, GLint y)
       
       switch(toChange)
       {
-		  case 'e':
-		  case 'E':
+		   case 'e':
+		   case 'E':
 					Ex += xpos;
 					Ey += ypos;
 					Ez += zpos;
