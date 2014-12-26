@@ -230,6 +230,61 @@ class grid {
 		
 		}	
 
+		void allocate_points_to_grid_display( pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals, double orig_resolution){	
+			
+			double xdiff, ydiff, zdiff;
+			int xindex, yindex, zindex;
+			
+			int sub_factor = 3; 
+
+			for(int i = 0; i < cloud.points.size(); i++){
+			
+				xdiff = (cloud.points[i].x - ref_point.x)/orig_resolution ;
+				ydiff = (cloud.points[i].y - ref_point.y)/orig_resolution ;
+				zdiff = (cloud.points[i].z - ref_point.z)/orig_resolution ;
+			
+				xindex = (int)(xdiff);	// + 1.0f); 	
+				yindex = (int)(ydiff);	// + 1.0f);
+				zindex = (int)(zdiff);	// + 1.0f);
+			
+				if( xdiff - xindex < 0.3333)
+					xindex = xindex * sub_factor;
+				else if(xdiff - xindex > 0.3333 && xdiff - xindex <= 0.6667)
+					xindex = xindex * sub_factor + 1;
+				else
+					xindex = xindex * sub_factor + 2;		
+
+				if( ydiff - yindex < 0.3333)
+					yindex = yindex * sub_factor;
+				else if(ydiff - yindex > 0.3333 && ydiff - yindex <= 0.6667)
+					yindex = yindex * sub_factor + 1;
+				else
+					yindex = yindex * sub_factor + 2;
+
+
+				if( zdiff - zindex < 0.3333)
+					zindex = zindex * sub_factor;
+				else if(zdiff - zindex > 0.3333 && zdiff - zindex <= 0.6667)
+					zindex = zindex * sub_factor + 1;
+				else
+					zindex = zindex * sub_factor + 2;		
+
+
+
+				data[xindex][yindex][zindex].p_list->points.push_back(cloud.points[i]);
+				data[xindex][yindex][zindex].n_list->points.push_back(cloud_normals.points[i]);
+			}			
+			
+			//cerr<<"Count 20: "<<count_20<<" "<<count_19<<" "<<count_18<<"\n";
+		
+			return;
+		
+		}			
+		
+			
+
+
+
 		void remove_voxels(int threshold, bool disp){
 			
 			
@@ -242,8 +297,8 @@ class grid {
 						
 						if(data[i][j][k].p_list->points.size() >= threshold){
 							
-							if(disp)
-								cerr<<"Inside!!!!!\n";
+							//if(disp)
+								//cerr<<"Inside!!!!!\n";
 								
 							data[i][j][k].used = true;
 							voxel_used_count++;

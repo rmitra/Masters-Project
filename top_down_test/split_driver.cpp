@@ -111,9 +111,9 @@ vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZ>::Ptr 
 	
 	vector<Training_block> tr_data_list;
 	
-	load_training_data(tr_data_filename, tr_data_list);
+	//load_training_data(tr_data_filename, tr_data_list);
 	
-	pcl::KdTreeFLANN<pcl::PointXYZ> kdtree = load_kd_tree(tr_data_list);	
+	//pcl::KdTreeFLANN<pcl::PointXYZ> kdtree = load_kd_tree(tr_data_list);	
 	
 	Block b = Block(0, 0, 0, g->length, g->width, g->height);
 	

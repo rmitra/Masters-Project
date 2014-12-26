@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <queue>
 #include "grid_datastructure.cpp"
+#include "draw_object_helper.cpp"
+
 
 #define LIMIT 20000
 
@@ -54,44 +56,6 @@ int grid_length, grid_width, grid_height;
 
 GLdouble scale;
 
-class Point_3D{
-	public:
-		double x;
-		double y;
-		double z;
-		
-		Point_3D(double x_i, double y_i, double z_i){
-			x = x_i;
-			y = y_i;
-			z = z_i;
-		}
-		
-		Point_3D(){
-			x = 0.0;
-			y = 0.0;
-			z = 0.0;
-		}
-		
-		Point_3D(Point_3D &p){
-			x = p.x;
-			y = p.y;
-			z = p.z;
-		}		
-};		
-
-
-class cuboid{
-	
-	public:
-	vector< vector<GLdouble> > faces[6];
-	GLdouble r,g,b;
-	GLdouble al;
-};
-
-vector<cuboid> c_list;
-vector<cuboid> c_list_texture;
-vector<cuboid> c_list_no_texture;
-
 cuboid gr;
 
 void SpecialKeyPressed(GLint key, GLint x, GLint y) ;
@@ -130,127 +94,6 @@ void set_random_color(cuboid &c){
 	c.al = 1;
 }
 
-
-void set_cuboid_c(cuboid &c, int x, int y, int z, int l, int w, int h){
-	
-		/*
-		c.r = (GLdouble)(rand()%100)/100.0f;
-		c.g = (GLdouble)(rand()%100)/100.0f;
-		c.b = (GLdouble)(rand()%100)/100.0f;
-		c.al = 1;
-		*/
-		
-		vector<GLdouble> t;
-		for(int i = 0; i<6; i++)
-			c.faces[i].clear();
-		
-		t.push_back(x); t.push_back(y); t.push_back(z);	
-		c.faces[0].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y); t.push_back(z);	
-		c.faces[0].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y+w); t.push_back(z);	
-		c.faces[0].push_back(t);
-		t.clear();
-		
-		t.push_back(x); t.push_back(y+w); t.push_back(z);	
-		c.faces[0].push_back(t);
-		t.clear();
-		
-		//############
-		
-		t.push_back(x); t.push_back(y); t.push_back(z+h);	
-		c.faces[1].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y); t.push_back(z+h);	
-		c.faces[1].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y+w); t.push_back(z+h);	
-		c.faces[1].push_back(t);
-		t.clear();
-		
-		t.push_back(x); t.push_back(y+w); t.push_back(z+h);	
-		c.faces[1].push_back(t);
-		t.clear();
-		
-		// ###################
-		
-		t.push_back(x); t.push_back(y); t.push_back(z);	
-		c.faces[2].push_back(t);
-		t.clear();
-		
-		t.push_back(x); t.push_back(y); t.push_back(z+h);	
-		c.faces[2].push_back(t);
-		t.clear();
-		
-		t.push_back(x); t.push_back(y+w); t.push_back(z+h);	
-		c.faces[2].push_back(t);
-		t.clear();
-		
-		t.push_back(x); t.push_back(y+w); t.push_back(z);	
-		c.faces[2].push_back(t);
-		t.clear();
-		
-		//########
-		
-		t.push_back(x+l); t.push_back(y); t.push_back(z);	
-		c.faces[3].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y); t.push_back(z+h);	
-		c.faces[3].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y+w); t.push_back(z+h);	
-		c.faces[3].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y+w); t.push_back(z);	
-		c.faces[3].push_back(t);
-		t.clear();
-		
-		//#######
-		
-		t.push_back(x); t.push_back(y); t.push_back(z);	
-		c.faces[4].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y); t.push_back(z);	
-		c.faces[4].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y); t.push_back(z+h);	
-		c.faces[4].push_back(t);
-		t.clear();
-		
-		t.push_back(x); t.push_back(y); t.push_back(z+h);	
-		c.faces[4].push_back(t);
-		t.clear();
-		
-		//#######
-	
-		t.push_back(x); t.push_back(y+w); t.push_back(z);	
-		c.faces[5].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y+w); t.push_back(z);	
-		c.faces[5].push_back(t);
-		t.clear();
-		
-		t.push_back(x+l); t.push_back(y+w); t.push_back(z+h);	
-		c.faces[5].push_back(t);
-		t.clear();
-		
-		t.push_back(x); t.push_back(y+w); t.push_back(z+h);	
-		c.faces[5].push_back(t);
-		t.clear();	
-
-}
 
 void draw_points(){
 	
@@ -458,7 +301,6 @@ void set_next_level(){
 			
 		}
 	
-
 }
 
 void initialise_parameters(grid *_g_disp, grid *_g, GLdouble scale_i, vector<Block> &block_list, pcl::PointXYZ min, pcl::PointXYZ max){
@@ -484,29 +326,31 @@ void initialise_parameters(grid *_g_disp, grid *_g, GLdouble scale_i, vector<Blo
 	
 	n = box_no = block_list.size();
 		
-	/*
+	double x_factor = (double)g_disp->length / (double)g->length;
+	double y_factor = (double)g_disp->width / (double)g->width;
+	double z_factor = (double)g_disp->height / (double)g->height;
 
 	for(int i=0; i<n; i++){
 		// For Texture 
 
-		x = block_list[i].x * 3;  y = block_list[i].y * 3;  z = block_list[i].z * 3;
+		x = block_list[i].x * 3 ;  y = block_list[i].y * 3;  z = block_list[i].z * 3;
 		l = block_list[i].length * 3;  w = block_list[i].width * 3;  h = block_list[i].height * 3;
 	
 		cerr<<x<<" "<<y<<" "<<z<<"   "<<l<<" "<<w<<" "<<h<<"\n";
 				
-		
-		for(int j = x; j < x + l; j++){
-			for(int k = y; k < y + w; k++){
-				for(int m = z; m < z + h; m++){
+		add_to_clist(g_disp, x, y, z, l, w, h);
+		//for(int j = x; j < x + l && j < g_disp->length; j++){
+			//for(int k = y; k < y + w && k < g_disp->width; k++){
+				//for(int m = z; m < z + h && m < g_disp->height; m++){
 			
-					c = cuboid();
-					set_cuboid_c(c, j, k, m, 1, 1, 1);	
-					set_cuboid_color(g_disp, c, j, k, m);
-					c_list_texture.push_back(c);
+					//c = cuboid();
+					//set_cuboid_c(c, j, k, m, 1, 1, 1);	
+					//set_cuboid_color(g_disp, c, j, k, m);
+					//c_list_texture.push_back(c);
 					
-				}
-			}		
-		}	
+				//}
+			//}		
+		//}	
 	
 		//cerr<<"V Count: "<<v_count<<"\n";
 		// For non texture 
@@ -524,12 +368,12 @@ void initialise_parameters(grid *_g_disp, grid *_g, GLdouble scale_i, vector<Blo
 
 	}
 	
-	c_list = c_list_texture;
+	c_list = c_list_no_texture;
 
-	cerr<<"C_LIST size: "<<c_list.size()<<"\n";
+	//cerr<<"C_LIST size: "<<c_list.size()<<"\n";
 	
-	*/
 	
+	/*
 	tree_q.push(1);
 	
 	x = block_list[1].x;  y = block_list[1].y;  z = block_list[1].z;
@@ -541,7 +385,7 @@ void initialise_parameters(grid *_g_disp, grid *_g, GLdouble scale_i, vector<Blo
 	c_list.push_back(c);
 		
 	n = box_no = 1; 
-	
+	*/
 	
 	pt_scx = pt_scy = pt_scz = g->resolution;
 	

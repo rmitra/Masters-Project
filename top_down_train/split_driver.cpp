@@ -26,15 +26,14 @@ vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZRGB>::P
 	//cerr<<"Enter BLOCK_SIZE_THRESHOLD: ";
 	fs>>BLOCK_SIZE_THRESHOLD;
 	
+	fs>>DIM_FRAC;
+
 	double rmse_3d_thresh; 
 	fs>>rmse_3d_thresh;
 	
 	cerr<<"RMSE_TH: "<<rmse_3d_thresh<<"\n";
 
-	int no_steps;
-	fs>>no_steps;
-
-
+	
 	fs.close();
 
 	//cerr<<"Volume Threshold :"<<VOL_THRESHOLD<<" BLOCK_SIZE_THRESHOLD :"<<BLOCK_SIZE_THRESHOLD<<"\n";
@@ -97,7 +96,7 @@ vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZRGB>::P
 	//}
 	
 	
-	return tree;
-	//return final_list;
+	//return tree;
+	return final_list;
 		
 }
