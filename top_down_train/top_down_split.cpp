@@ -18,7 +18,8 @@ using namespace std;
 #define VOXEL_THRESHOLD 0.90
 
 double VOL_THRESHOLD;  
-double BLOCK_SIZE_THRESHOLD; 
+double BLOCK_SIZE_THRESHOLD;
+ 
 int start;
 
 #include "rmse.cpp"

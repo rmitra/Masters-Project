@@ -12,11 +12,11 @@
 
 /* start of program */
 
+double DIM_FRAC;
+
 #ifndef VOXELIZATION_GRID
 
 #define VOXELIZATION_GRID
-
-#define DIM_FRAC 0.1f
 
 /* function to find min max of a cloud 
  * Input is a point cloud

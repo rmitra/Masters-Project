@@ -42,13 +42,15 @@ int main(int argc, char **argv){
 	
 	grid *g_disp;
 	
-	resolution = resolution / 3.0;
+	double sub_factor = 3.0;	
+
+	resolution = resolution / sub_factor;
 	
-	g_disp = new grid(length * 3, width * 3, height * 3, resolution, min, max);
+	g_disp = new grid(g->length * 3, g->width * 3, g->height * 3, resolution, min, max);
 	
 	int threshold = 1;
 	
-	g_disp->allocate_points_to_grid(*cloud, *cloud_normals);
+	g_disp->allocate_points_to_grid_display(*cloud, *cloud_normals, resolution * sub_factor);
 	g_disp->remove_voxels(threshold, false);
 	
 	initialise_parameters(g_disp, g, atoi(argv[3]), block_list, min, max);
