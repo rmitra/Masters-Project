@@ -1,14 +1,15 @@
-#include "split_driver.cpp"
-#include "merge_block.cpp"
-
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud;	// Also required by draw_object.cpp
-
-#include "./draw_object.cpp"
+// example call: ./box_decomposition ~/ply_data/test_whitehouse.ply 4
 
 #include <pcl/point_types.h>
 #include <pcl/features/shot.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/keypoints/iss_3d.h>
+
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud;	// Also required by draw_object.cpp
+
+#include "split_driver.cpp"
+#include "merge_block.cpp"
+#include "./draw_object.cpp"
 
 #include "point_res.cpp"
 
@@ -34,7 +35,6 @@ int main(int argc, char **argv){
 	
 	char directory_name[14] = "../../feature";
 	vector<Block> block_list = split_driver(argv[1], cloud, cloud_normals, g, min, max, length, width, height, resolution, directory_name);
-	// vector<Block> block_list = split_driver(argv[1], cloud, cloud_normals, g, min, max, length, width, height, resolution, argv[2]);
 	
 	grid *g_disp;
 	double sub_factor = 3.0;	

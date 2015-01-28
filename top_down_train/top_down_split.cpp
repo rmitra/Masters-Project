@@ -25,8 +25,8 @@ int start;
 #include "rmse.cpp"
 
 
-double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], double vol_l[], double vol_u[], int &er_cutIndex, double &less_er_vol, bool &inside_loop){
-	
+double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], double vol_l[], double vol_u[], int &er_cutIndex, double &less_er_vol, bool &inside_loop)
+{	
 	//double rmse_1_diff[500];
 	
 	bool is_lower = false;
@@ -137,9 +137,7 @@ double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], doub
 		}
 		
 	}
-	*/
-	
-		
+	*/		
 	
 	if(inside_loop){
 				
@@ -169,8 +167,9 @@ double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], doub
 	}
 }
 
-double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, int width, int height,  int &cutIndex, bool &is_red, double &less_er_vol, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid){	//calculate gain in one direction
-
+//calculate gain in one direction
+double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, int width, int height,  int &cutIndex, bool &is_red, double &less_er_vol, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
+{
 	int min_x_u, max_x_u;
 	int min_y_u, max_y_u;
 	int min_z_u, max_z_u;
@@ -194,25 +193,25 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 		
 	int end, begin;
 	
-	if(plane == 0){
+	if(plane == 0) {
 		begin = start;
 		end = height - 1 - begin;
 	}
-	else if(plane == 1){
+	else if(plane == 1) {
 		begin = start;
 		end = width - 1 - begin;
 	}
-	else{
+	else {
 		begin = start;
 		end = length - 1 - begin;
 	}
 	
-	cerr<<"For plane: "<<plane<<"\n";
-	cerr<<"Begin : "<<begin<<" End : "<<end<<"\n";
+	cerr << "For plane: " << plane << "\n";
+	cerr << "Begin : " << begin << " End : " << end<<"\n";
 	
 	Block b;
 	
-	for(int i = begin; i <= end; i++){
+	for(int i = begin; i <= end; i++) {
 			
 		inside_loop = true;
 				

@@ -24,7 +24,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/vfh.h>
 
-
 #include "point_res.cpp"
 
 using namespace std;
@@ -348,25 +347,24 @@ std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > get_clu
 
 }*/
 
-string extract_name(char * filename){
-
+string extract_name(char * filename)
+{
 	string temp(filename);
 
 	vector<string> fields_temp;
 	vector<string> fields;
 
 	split(fields_temp, temp, is_any_of("/") );
-
 	split(fields, fields_temp[fields_temp.size() - 1], is_any_of(".") );
 
-	cerr<<"Extracted model name :"<<fields[0]<<"\n";
+	cerr << "Extracted model name :" << fields[0]<<"\n";
 
 	return fields[0];
 
 }
 
-void get_cloud_from_grid(Block b, grid *g, pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals){
-
+void get_cloud_from_grid(Block b, grid *g, pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals)
+{
 	cloud = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>);
 	cloud_normals = pcl::PointCloud<pcl::Normal>::Ptr(new pcl::PointCloud<pcl::Normal>);
 
@@ -387,36 +385,27 @@ void get_cloud_from_grid(Block b, grid *g, pcl::PointCloud<pcl::PointXYZ>::Ptr &
 
 }
 
-void save_features(string dir_name, string model_name, int sub_model_count, pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals){
-
+void save_features(string dir_name, string model_name, int sub_model_count, pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals)
+{
 	double cloud_res = get_cloud_resolution(cloud);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_keys = get_keypoints(cloud, cloud_normals, cloud_res, 5.0);
-
 	pcl::PointCloud<pcl::SHOT352>::Ptr cloud_descriptor = get_features(cloud_keys, cloud, cloud_normals, cloud_res);
 
 	model_name += "_";
 	model_name += to_string(sub_model_count);
 
 	string model_name_des = dir_name + model_name + "_des.pcd";
-
 	pcl::io::savePCDFileASCII (model_name_des, *cloud_descriptor);
 
 	string model_name_key = dir_name + model_name + "_key.pcd";
-
 	pcl::io::savePCDFileASCII (model_name_key, *cloud_keys);
 
 	string model_name_cloud = dir_name + model_name + "_cloud.pcd";
-
 	pcl::io::savePCDFileASCII (model_name_cloud, *cloud);
 
 	string model_name_normal = dir_name + model_name + "_normal.pcd";
-
 	pcl::io::savePCDFileASCII (model_name_normal, *cloud_normals);
-
-
 }
-
-
 
 #endif

@@ -9,11 +9,11 @@
 using namespace std;
 
 /*bool found_cover(grid *g, Block b, int i, int j, int k, int plane){
-	
+
 	int count = 0;
-	
+
 	if(plane == 0){
-	
+
 		if(g->data[i][j][k].used)
 			count++;
 		if(k+1 < b.z + b.height && g->data[i][j][k+1].used)
@@ -33,9 +33,9 @@ using namespace std;
 		if(j-1 >= b.y && k-1 >= b.z && g->data[i][j-1][k-1].used)
 			count++;
 	}
-	
+
 	if(plane == 1){
-	
+
 		if(g->data[i][j][k].used)
 			count++;
 		if(k+1 < b.z + b.height && g->data[i][j][k+1].used)
@@ -57,7 +57,7 @@ using namespace std;
 	}
 
 	if(plane == 2){
-	
+
 		if(g->data[i][j][k].used)
 			count++;
 		if(j+1 < b.y + b.width && g->data[i][j+1][k].used)
@@ -81,249 +81,239 @@ using namespace std;
 	if(count >= 1)
 		return true;
 	else
-		false;	
+		false;
 
 }*/
 
-bool is_occluded(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int k, int plane){
-
+bool is_occluded(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int k, int plane)
+{
 	pcl::PointXYZ q_point;
-	
+
 	q_point.x = (double)i;
 	q_point.y = (double)j;
 	q_point.z = (double)k;
 
 	vector<int> pointIdxRadiusSearch;
 	vector<float> pointRadiusSquaredDistance;
-	
+
 	int found_instances = kdtree_grid.radiusSearch (q_point, 1.8, pointIdxRadiusSearch, pointRadiusSquaredDistance);
-	
+
 	/*for(int i = 0; i < found_instances; i++){
-		
+
 		if(plane == 1){
 			cloud.points[ pointIdxRadiusSearch[i] ].x
 		}
-	}*/	
+	}*/
 
-	if(found_instances >= 5)
-		return false;
-	return true;	
-
+	return (found_instances < 5);
 }
 
 
-double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, bool print_info){
-	
+double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, bool print_info)
+{
 	double sum_error = 0.0;
-	
+
 	double N = 0;
 	double used = 0;
-	
-	
-	
+
 	int miss_count = 0;
-	
+
 	for(int i = b.x; i < b.x + b.length; i++){
 		for(int j = b.y; j < b.y + b.width; j++){
-			for(int k = b.z; k < b.z + b.height; k++){
-		
-				if(g->data[i][j][k].used){
-					
+			for(int k = b.z; k < b.z + b.height; k++) {
+				if(g->data[i][j][k].used) {
 					//if(k <= b.z + b.height - 3 && k >= 2 && j >= 2 && j <= b.y + b.width - 3 &&  i >= 2 && i <= b.x + b.length - 3)
 					//	miss_count++;
-						
+
 					used = used + 1.0;
-					
+
 					bool is_boundary = false;
-				
+
 					int nearest_plane = 0;
 					double near_distance = 1000000;
-					
+
 					//For side 1 //
-					
+
 					if(i - b.x < near_distance){
-						
+
 						//bool found = false;
 						//for(int l = i-1; l >= b.x; l--){
 						//	if(g->data[l][j][k].used)
 						//		found = true;
 						//}
-						
+
 						//if(!found){
 							nearest_plane = 1;
 							near_distance = i - b.x;
 							is_boundary = true;
 						//}
 					}
-				
+
 					//For side 2 //
-					
+
 					if(b.x + b.length - 1 - i < near_distance){
-						
+
 					   // bool found = false;
 						//for(int l = i+1; l < b.x + b.length; l++){
 						//	 if(g->data[l][j][k].used)
 						//	 	found = true;
 						//}
-						
+
 						//if(!found){
 							nearest_plane = 2;
 							near_distance = b.x + b.length - 1 - i;
 							is_boundary = true;
 						//}
 					}
-				
+
 					//For side 3 //
-					
+
 					if( j - b.y < near_distance){
-						
+
 						//bool found = false;
 						//for(int l = j-1; l >= b.y; l--){
 						//	if(g->data[i][l][k].used)
 						//		found = true;
 						//}
-						
+
 						//if(!found){
 							nearest_plane = 3;
 							near_distance = j - b.y;
 							is_boundary = true;
 						//}
 					}
-				
+
 					//For side 4 //
-					
+
 					if(b.y + b.width - 1 - j < near_distance){
-						
+
 						//bool found = false;
 						//for(int l = j+1; l < b.y + b.width; l++){
 						//	 if(g->data[i][l][k].used)
 						//	 	found = true;
 					//	}
-						
+
 						//if(!found){
 							nearest_plane = 4;
 							near_distance = b.y + b.width - 1 - j;
 							is_boundary = true;
 					//	}
-					} 
-				
+					}
+
 					//For side 5 //
-					
+
 					if( k - b.z < near_distance){
-						
+
 						//bool found = false;
 						//for(int l = k-1; l >= b.z; l--){
 						//	 if(g->data[i][j][l].used)
 						//	 	found = true;
 						//}
-						
+
 						//if(!found){
 							nearest_plane = 5;
 							near_distance = k - b.z;
 							is_boundary = true;
 					//	}
 					}
-				
+
 					//For side 6 //
-					
+
 					if(b.z + b.height - 1 - k < near_distance){
-						
+
 						//bool found = false;
 						//for(int l = k+1; l < b.z + b.height; l++){
 						//	 if(g->data[i][j][l].used)
 						//	 	found = true;
 						//}
-						
+
 						//if(!found){
 							nearest_plane = 6;
 							near_distance = b.z + b.height - 1 - k;
 							is_boundary = true;
 						//}
 					}
-				
+
 					//if(is_boundary){
-						
+
 						//if(is_occluded(kdtree_grid, i, j, k, nearest_plane)){
-						
+
 							if(near_distance - 1 > 0)
 								near_distance = near_distance - 1;
 							else
 								near_distance = 0;
-															
+
 							if(near_distance > 0 && !is_occluded(kdtree_grid, i, j, k, nearest_plane)){
 								miss_count++;
-								
+
 								//if(print_info)
 								//	cerr<<i<<" "<<j<<" "<<k<<" "<<near_distance<<" "<<nearest_plane<<"\n";
 							}
-						
-							sum_error = sum_error + near_distance * near_distance; 
+
+							sum_error = sum_error + near_distance * near_distance;
 							N = N + 1.0;
 						//}
-					//}				
-				
+					//}
+
 				}
 			}
-		
+
 		}
 	}
-	
-	if(print_info)
-		cerr<<"Miss Count :"<<miss_count<<"\n";
-	
+
+	if(print_info) cerr << "Miss Count :" << miss_count << "\n";
+
 	double rmse;
-	
+
 	if(N == 0)
 		rmse = 0;
-	else{
+	else {
 		double mean_error = sum_error / N;
-	
 		rmse = pow(mean_error, 0.5);
-	}	
-	
-	return rmse;
+	}
 
+	return rmse;
 }
 
 /*
 void cal_min_max_3D(grid * g, int start_x, int start_y, int start_z, int stop_x, int stop_y, int stop_z, int &min_x, int &min_y, int &min_z, int &max_x, int &max_y, int &max_z){
 
-	min_x = stop_x, min_y = stop_y, min_z = stop_z; 
-	max_x = start_x-1, max_y = start_y-1, max_z = start_z-1; 
+	min_x = stop_x, min_y = stop_y, min_z = stop_z;
+	max_x = start_x-1, max_y = start_y-1, max_z = start_z-1;
 
 	bool found_data = false;
-	
+
 	for(int i = start_x; i<stop_x; i++){
 		for(int j = start_y; j<stop_y; j++){
 			for(int k = start_z; k<stop_z; k++){
-			
+
 				if(g->data[i][j][k].used == true)
 				{
 					found_data = true;
-					
+
 					if(min_x > i)
 						min_x = i;
-					
+
 					if(min_y > j)
 						min_y = j;
-					
+
 					if(min_z > k)
 						min_z = k;
-				
+
 					if(max_x < i)
 						max_x = i;
-					
+
 					if(max_y < j)
 						max_y = j;
-					
+
 					if(max_z < k)
-						max_z = k;	
-							
-				}	
-			
+						max_z = k;
+
+				}
+
 			}
 		}
-	}			
+	}
 
 	if(!found_data){
 		max_x = 0, min_x = 1;
@@ -334,10 +324,10 @@ void cal_min_max_3D(grid * g, int start_x, int start_y, int start_z, int stop_x,
 }
 */
 
-void cal_min_max_3D_upper(grid * g, int start_x, int start_y, int start_z, int stop_x, int stop_y, int stop_z, int plane, int &min_x, int &min_y, int &min_z, int &max_x, int &max_y, int &max_z){
-
-	min_x = stop_x, min_y = stop_y, min_z = stop_z; 
-	max_x = start_x-1, max_y = start_y-1, max_z = start_z-1; 
+void cal_min_max_3D_upper(grid * g, int start_x, int start_y, int start_z, int stop_x, int stop_y, int stop_z, int plane, int &min_x, int &min_y, int &min_z, int &max_x, int &max_y, int &max_z)
+{
+	min_x = stop_x, min_y = stop_y, min_z = stop_z;
+	max_x = start_x-1, max_y = start_y-1, max_z = start_z-1;
 
 	/*
 	if(plane == 0)
@@ -345,42 +335,42 @@ void cal_min_max_3D_upper(grid * g, int start_x, int start_y, int start_z, int s
 	else if(plane == 1)
 		min_y = start_y;
 	else
-		min_x = start_x;		
+		min_x = start_x;
 	*/
-		
+
 	bool found_data = false;
-	
+
 	for(int i = start_x; i<stop_x; i++){
 		for(int j = start_y; j<stop_y; j++){
 			for(int k = start_z; k<stop_z; k++){
-			
+
 				if(g->data[i][j][k].used == true)
 				{
 					found_data = true;
-					
+
 					if(min_x > i) // && plane != 2)
 						min_x = i;
-					
+
 					if(min_y > j) // && plane != 1)
 						min_y = j;
-					
+
 					if(min_z > k) // && plane != 0
 						min_z = k;
-				
+
 					if(max_x < i)
 						max_x = i;
-					
+
 					if(max_y < j)
 						max_y = j;
-					
+
 					if(max_z < k)
-						max_z = k;	
-							
-				}	
-			
+						max_z = k;
+
+				}
+
 			}
 		}
-	}			
+	}
 
 	if(!found_data){
 		max_x = 0, min_x = 1;
@@ -392,50 +382,50 @@ void cal_min_max_3D_upper(grid * g, int start_x, int start_y, int start_z, int s
 
 void cal_min_max_3D_lower(grid * g, int start_x, int start_y, int start_z, int stop_x, int stop_y, int stop_z, int plane, int &min_x, int &min_y, int &min_z, int &max_x, int &max_y, int &max_z){
 
-	min_x = stop_x, min_y = stop_y, min_z = stop_z; 
-	max_x = start_x-1, max_y = start_y-1, max_z = start_z-1; 
+	min_x = stop_x, min_y = stop_y, min_z = stop_z;
+	max_x = start_x-1, max_y = start_y-1, max_z = start_z-1;
 
-	/*	
+	/*
 	if(plane == 0)
 		max_z = stop_z - 1;
 	else if(plane == 1)
 		max_y = stop_y - 1;
 	else
-		max_x = stop_x - 1;		
-	*/	
+		max_x = stop_x - 1;
+	*/
 	bool found_data = false;
-	
+
 	for(int i = start_x; i<stop_x; i++){
 		for(int j = start_y; j<stop_y; j++){
 			for(int k = start_z; k<stop_z; k++){
-			
+
 				if(g->data[i][j][k].used == true)
 				{
 					found_data = true;
-					
+
 					if(min_x > i)
 						min_x = i;
-					
+
 					if(min_y > j)
 						min_y = j;
-					
+
 					if(min_z > k)
 						min_z = k;
-				
+
 					if( max_x < i ) // && plane != 2)
 						max_x = i;
-					
-					if(max_y < j) // && plane != 1) 
+
+					if(max_y < j) // && plane != 1)
 						max_y = j;
-					
+
 					if(max_z < k) // && plane != 0)
-						max_z = k;	
-							
-				}	
-			
+						max_z = k;
+
+				}
+
 			}
 		}
-	}			
+	}
 
 	if(!found_data){
 		max_x = 0, min_x = 1;

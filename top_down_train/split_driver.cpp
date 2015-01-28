@@ -71,5 +71,4 @@ vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZRGB>::P
 	height = g->height;
 
 	return decom;
-
 }
