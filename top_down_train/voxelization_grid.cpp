@@ -18,6 +18,19 @@ double DIM_FRAC;
 
 #define VOXELIZATION_GRID
 
+void remove_spurious_pixels(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
+{
+	for (int i = b.x; i < b.x + b.length; i++) {
+		for (int j = b.y; j < b.y + b.width; j++) {
+			for (int k = b.z; k < b.z + b.height; k++) {
+				if (g->data[i][j][k].used and is_occluded(kdtree_grid, i, j, k)) {
+					// remove all points inside this voxel
+				}
+			}
+		}
+	}
+}
+
 /* function to find min max of a cloud 
  * Input is a point cloud
  * Output are two pcl::PointXYZ containg the min and the max

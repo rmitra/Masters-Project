@@ -85,7 +85,7 @@ using namespace std;
 
 }*/
 
-bool is_occluded(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int k, int plane)
+bool is_occluded(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int k)
 {
 	pcl::PointXYZ q_point;
 
@@ -96,14 +96,7 @@ bool is_occluded(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int
 	vector<int> pointIdxRadiusSearch;
 	vector<float> pointRadiusSquaredDistance;
 
-	int found_instances = kdtree_grid.radiusSearch (q_point, 1.8, pointIdxRadiusSearch, pointRadiusSquaredDistance);
-
-	/*for(int i = 0; i < found_instances; i++){
-
-		if(plane == 1){
-			cloud.points[ pointIdxRadiusSearch[i] ].x
-		}
-	}*/
+	int found_instances = kdtree_grid.radiusSearch(q_point, 1.8, pointIdxRadiusSearch, pointRadiusSquaredDistance);
 
 	return (found_instances < 5);
 }
@@ -113,20 +106,12 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 {
 	double sum_error = 0.0;
 
-	double N = 0;
-	double used = 0;
+	int N = 0;
 
-	int miss_count = 0;
-
-	for(int i = b.x; i < b.x + b.length; i++){
-		for(int j = b.y; j < b.y + b.width; j++){
-			for(int k = b.z; k < b.z + b.height; k++) {
-				if(g->data[i][j][k].used) {
-					//if(k <= b.z + b.height - 3 && k >= 2 && j >= 2 && j <= b.y + b.width - 3 &&  i >= 2 && i <= b.x + b.length - 3)
-					//	miss_count++;
-
-					used = used + 1.0;
-
+	for (int i = b.x; i < b.x + b.length; i++) {
+		for (int j = b.y; j < b.y + b.width; j++) {
+			for (int k = b.z; k < b.z + b.height; k++) {
+				if (g->data[i][j][k].used) {
 					bool is_boundary = false;
 
 					int nearest_plane = 0;
@@ -168,7 +153,7 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 
 					//For side 3 //
 
-					if( j - b.y < near_distance){
+					if (j - b.y < near_distance) {
 
 						//bool found = false;
 						//for(int l = j-1; l >= b.y; l--){
@@ -185,7 +170,7 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 
 					//For side 4 //
 
-					if(b.y + b.width - 1 - j < near_distance){
+					if (b.y + b.width - 1 - j < near_distance) {
 
 						//bool found = false;
 						//for(int l = j+1; l < b.y + b.width; l++){
@@ -202,7 +187,7 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 
 					//For side 5 //
 
-					if( k - b.z < near_distance){
+					if (k - b.z < near_distance) {
 
 						//bool found = false;
 						//for(int l = k-1; l >= b.z; l--){
@@ -219,7 +204,7 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 
 					//For side 6 //
 
-					if(b.z + b.height - 1 - k < near_distance){
+					if (b.z + b.height - 1 - k < near_distance) {
 
 						//bool found = false;
 						//for(int l = k+1; l < b.z + b.height; l++){
@@ -234,41 +219,26 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 						//}
 					}
 
-					//if(is_boundary){
-
-						//if(is_occluded(kdtree_grid, i, j, k, nearest_plane)){
-
-							if(near_distance - 1 > 0)
-								near_distance = near_distance - 1;
-							else
-								near_distance = 0;
-
-							if(near_distance > 0 && !is_occluded(kdtree_grid, i, j, k, nearest_plane)){
-								miss_count++;
-
-								//if(print_info)
-								//	cerr<<i<<" "<<j<<" "<<k<<" "<<near_distance<<" "<<nearest_plane<<"\n";
-							}
-
-							sum_error = sum_error + near_distance * near_distance;
-							N = N + 1.0;
-						//}
-					//}
-
+					if (near_distance - 1 > 0) {
+						near_distance = near_distance - 1;
+					}
+					else {
+						near_distance = 0;
+					}
+					
+					sum_error = sum_error + near_distance * near_distance;
+					N++;
 				}
 			}
-
 		}
 	}
 
-	if(print_info) cerr << "Miss Count :" << miss_count << "\n";
-
 	double rmse;
 
-	if(N == 0)
+	if (N == 0)
 		rmse = 0;
 	else {
-		double mean_error = sum_error / N;
+		double mean_error = sum_error / (double)N;
 		rmse = pow(mean_error, 0.5);
 	}
 

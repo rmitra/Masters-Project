@@ -10,9 +10,8 @@
 
 using namespace std;
 
-vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud, pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals, grid * &g, pcl::PointXYZ &min, pcl::PointXYZ &max, int &length, int &width, int &height, double &resolution_in, char * ft_dir_name)
+vector<Block> split_driver(char* filename, pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud, pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals, grid * &g, pcl::PointXYZ &min, pcl::PointXYZ &max, int &length, int &width, int &height, double &resolution_in, char * ft_dir_name)
 {
-
 	fstream fs;
 	fs.open("../arguments.txt", fstream::in);
 
@@ -22,10 +21,8 @@ vector<Block> split_driver (char* filename, pcl::PointCloud<pcl::PointXYZRGB>::P
 
 	double rmse_3d_thresh;
 	fs >> rmse_3d_thresh;
-
-	cerr << "RMSE_TH: "<<rmse_3d_thresh << endl;
-
 	fs.close();
+	// cerr << "RMSE_TH: "<<rmse_3d_thresh << endl;
 
 	// loading the .ply file into cloud
 	if (pcl::io::loadPLYFile<pcl::PointXYZRGB> (filename, *cloud) == -1)

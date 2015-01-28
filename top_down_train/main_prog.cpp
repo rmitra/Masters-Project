@@ -15,11 +15,11 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud;	// Also required by draw_object.cp
 
 using namespace std;
 
-int main(int argc, char **argv){
-
+int main(int argc, char **argv)
+{
 	if (argc < 2) {
 		cout<<"Usage: <executable binary> <path to .ply file> <Scale for rendering>\n";
-		exit(0);
+		exit(1);
 	}
 	
 	grid *g;
@@ -36,6 +36,7 @@ int main(int argc, char **argv){
 	char directory_name[14] = "../../feature";
 	vector<Block> block_list = split_driver(argv[1], cloud, cloud_normals, g, min, max, length, width, height, resolution, directory_name);
 	
+	// grid used for displaying with OpenGL
 	grid *g_disp;
 	double sub_factor = 3.0;	
 	resolution = resolution / sub_factor;
