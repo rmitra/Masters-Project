@@ -11,8 +11,6 @@
 #include "grid_datastructure.cpp"
 #include "extract_features.cpp"
 
-// #include "./gmm/gmm_main.cpp"
-
 using namespace std;
 
 #define VOXEL_THRESHOLD 0.90
@@ -23,7 +21,6 @@ double BLOCK_SIZE_THRESHOLD;
 int start;
 
 #include "rmse.cpp"
-
 
 double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], double vol_l[], double vol_u[], int &er_cutIndex, double &less_er_vol, bool &inside_loop)
 {

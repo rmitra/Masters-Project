@@ -6,6 +6,8 @@
 
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 
+#include "util.hpp"
+
 using namespace std;
 
 /*bool found_cover(grid *g, Block b, int i, int j, int k, int plane){
@@ -85,21 +87,6 @@ using namespace std;
 
 }*/
 
-bool is_occluded(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int k)
-{
-	pcl::PointXYZ q_point;
-
-	q_point.x = (double)i;
-	q_point.y = (double)j;
-	q_point.z = (double)k;
-
-	vector<int> pointIdxRadiusSearch;
-	vector<float> pointRadiusSquaredDistance;
-
-	int found_instances = kdtree_grid.radiusSearch(q_point, 1.8, pointIdxRadiusSearch, pointRadiusSquaredDistance);
-
-	return (found_instances < 5);
-}
 
 
 double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, bool print_info)
@@ -225,7 +212,7 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 					else {
 						near_distance = 0;
 					}
-					
+
 					sum_error = sum_error + near_distance * near_distance;
 					N++;
 				}

@@ -18,19 +18,6 @@ double DIM_FRAC;
 
 #define VOXELIZATION_GRID
 
-void remove_spurious_pixels(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
-{
-	for (int i = b.x; i < b.x + b.length; i++) {
-		for (int j = b.y; j < b.y + b.width; j++) {
-			for (int k = b.z; k < b.z + b.height; k++) {
-				if (g->data[i][j][k].used and is_occluded(kdtree_grid, i, j, k)) {
-					// remove all points inside this voxel
-				}
-			}
-		}
-	}
-}
-
 /* function to find min max of a cloud 
  * Input is a point cloud
  * Output are two pcl::PointXYZ containg the min and the max
@@ -86,20 +73,18 @@ grid* setup_grid(pcl::PointXYZ & resolution, pcl::PointXYZ minPoint, pcl::PointX
  */
 
 
-void set_kdtree_grid(grid *g, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid){
-
+void set_kdtree_grid(grid *g, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
+{
 	pcl::PointCloud<pcl::PointXYZ>::Ptr voxel_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::PointXYZ t_data;
 	
-	for(int i = 0; i < g->length; i++){
-		for(int j = 0; j < g->width; j++){
-			for(int k = 0; k < g->height; k++){
-				if(g->data[i][j][k].used){
-				
+	for (int i = 0; i < g->length; i++) {
+		for (int j = 0; j < g->width; j++) {
+			for (int k = 0; k < g->height; k++) {
+				if (g->data[i][j][k].used) {
 					t_data.x = i;
 					t_data.y = j;
-					t_data.z = k;
-					
+					t_data.z = k;					
 					(voxel_cloud->points).push_back(t_data);
 				}
 			}
@@ -113,10 +98,10 @@ void set_kdtree_grid(grid *g, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid){
 void voxelize(grid *g, pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int threshold){
 	
 	g->allocate_points_to_grid(cloud, cloud_normals);
-	g->remove_voxels(threshold, false);	
+	g->remove_voxels(threshold, false);
 
 	set_kdtree_grid(g, kdtree_grid);
-
+	g->remove_spurious_voxels(kdtree_grid);
 }
 
 void set_resolution(pcl::PointXYZ & resolution, pcl::PointXYZ minPoint, pcl::PointXYZ maxPoint){

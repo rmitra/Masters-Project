@@ -9,6 +9,8 @@
 #include <pcl/io/ply_io.h>
 #include <pcl/point_types.h>
 
+#include "util.hpp"
+
 /* end of header files */
 
 #ifndef GRID_HEADER
@@ -18,34 +20,21 @@
 
 using namespace std;
 
-class grid_element {								// element for every grid node
+// element for every grid node
+class grid_element {
+	public:
 
-		public:
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr p_list;			// list of those points
+	pcl::PointCloud<pcl::Normal>::Ptr n_list;			// list of normals
+	double r,g,b;
 
-		pcl::PointCloud<pcl::PointXYZRGB>::Ptr p_list;			// list of those points.
-		pcl::PointCloud<pcl::Normal>::Ptr n_list;			// list of normals.
-		double r,g,b;
-		//int rep[3];
+	bool used;
 
-		bool used;
-
-		grid_element(){							// constructor
-
-			p_list = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
-			n_list = pcl::PointCloud<pcl::Normal>::Ptr(new pcl::PointCloud<pcl::Normal>);
-
-			used = false;
-
-		}
-
-		/*void setRep(int x, int y, int z){
-			rep[0] = x;
-			rep[1] = y;
-			rep[2] = z;
-		}*/
-
-
-
+	grid_element(){
+		p_list = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
+		n_list = pcl::PointCloud<pcl::Normal>::Ptr(new pcl::PointCloud<pcl::Normal>);
+		used = false;
+	}
 };
 
 class grid {
@@ -295,13 +284,24 @@ class grid {
 					}
 				}
 			}
-
 			// cout<<"Voxel used after thresholding: "<<voxel_used_count<<endl;
-
 			return;
 		}
 
-
+		void remove_spurious_voxels(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
+		{
+			for (int i = 0; i < length; i++) {
+				for (int j = 0; j < width; j++) {
+					for (int k = 0; k < height; k++) {
+						if (data[i][j][k].used and is_occluded(kdtree_grid, i, j, k)) {
+							cout << "found spurious voxel " << i << " " << j << " " << k << endl;
+							// mark this is as an unused voxel i.e. ignore it in the future
+							data[i][j][k].used = false;
+						}
+					}
+				}
+			}
+		}
 };
 
 class Block{
