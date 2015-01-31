@@ -6,7 +6,7 @@
 
 using namespace std;
 
-bool is_occluded(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int k)
+int num_neighbours(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int k, int radius=1.8)
 {
 	pcl::PointXYZ q_point;
 
@@ -17,10 +17,17 @@ bool is_occluded(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int
 	vector<int> pointIdxRadiusSearch;
 	vector<float> pointRadiusSquaredDistance;
 
-	int found_instances = kdtree_grid.radiusSearch(q_point, 1.8, pointIdxRadiusSearch, pointRadiusSquaredDistance);
+	int found = kdtree_grid.radiusSearch(q_point, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance);
+    return found;
+}
 
-    return (found_instances < 10);
-	// return (found_instances < 5);
+bool is_spurious(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int k)
+{
+    int nearer_neighbours = num_neighbours(kdtree_grid, i, j, k, 1.8);
+    int farther_neighbours = num_neighbours(kdtree_grid, i, j, k, 3.6);
+    float ratio = (float)farther_neighbours / (float)nearer_neighbours;
+
+    return (ratio < 7.5);
 }
 
 #endif
