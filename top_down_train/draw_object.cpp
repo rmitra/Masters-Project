@@ -9,9 +9,9 @@
 #include <cstdlib>
 #include <cstdlib>
 #include <queue>
-#include "grid_datastructure.cpp"
-#include "draw_object_helper.cpp"
 
+#include "grid.hpp"
+#include "draw_object_helper.cpp"
 
 #define LIMIT 20000
 

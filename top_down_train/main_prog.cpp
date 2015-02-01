@@ -7,9 +7,10 @@
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud;	// Also required by draw_object.cpp
 
+#include "grid.cpp"
 #include "split_driver.cpp"
 #include "merge_block.cpp"
-#include "./draw_object.cpp"
+#include "draw_object.cpp"
 
 #include "point_res.cpp"
 
@@ -35,6 +36,8 @@ int main(int argc, char **argv)
 	
 	char directory_name[14] = "../../feature";
 	vector<Block> block_list = split_driver(argv[1], cloud, cloud_normals, g, min, max, length, width, height, resolution, directory_name);
+
+	trim_boxes(block_list);
 	
 	// grid used for displaying with OpenGL
 	grid *g_disp;

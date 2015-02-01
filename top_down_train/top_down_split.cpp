@@ -8,7 +8,7 @@
 #include <stack>
 #include <string>
 
-#include "grid_datastructure.cpp"
+#include "grid.hpp"
 #include "extract_features.cpp"
 
 using namespace std;
