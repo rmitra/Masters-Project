@@ -12,7 +12,8 @@ class Block
 	int width;
 	int height;
 
-	Block(){
+	Block()
+	{
 		x = y = z = 0;
 		length = width = height = 1;
 	}

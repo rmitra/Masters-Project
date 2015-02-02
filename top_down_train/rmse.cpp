@@ -6,7 +6,7 @@
 
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 
-#include "util.hpp"
+#include "heuristics.hpp"
 
 using namespace std;
 
@@ -86,8 +86,6 @@ using namespace std;
 		false;
 
 }*/
-
-
 
 double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, bool print_info)
 {
@@ -277,7 +275,6 @@ void cal_min_max_3D(grid * g, int start_x, int start_y, int start_z, int stop_x,
 		max_y = 0, min_y = 1;
 		max_z = 0, min_z = 1;
 	}
-
 }
 */
 
@@ -352,12 +349,10 @@ void cal_min_max_3D_lower(grid * g, int start_x, int start_y, int start_z, int s
 	*/
 	bool found_data = false;
 
-	for(int i = start_x; i<stop_x; i++){
-		for(int j = start_y; j<stop_y; j++){
-			for(int k = start_z; k<stop_z; k++){
-
-				if(g->data[i][j][k].used == true)
-				{
+	for (int i = start_x; i<stop_x; i++) {
+		for (int j = start_y; j<stop_y; j++) {
+			for (int k = start_z; k<stop_z; k++) {
+				if (g->data[i][j][k].used == true) {
 					found_data = true;
 
 					if(min_x > i)
@@ -384,12 +379,10 @@ void cal_min_max_3D_lower(grid * g, int start_x, int start_y, int start_z, int s
 		}
 	}
 
-	if(!found_data){
+	if(!found_data)
+	{
 		max_x = 0, min_x = 1;
 		max_y = 0, min_y = 1;
 		max_z = 0, min_z = 1;
 	}
-
 }
-
-

@@ -103,15 +103,15 @@ grid::grid(int _length, int _width, int _height, double res, pcl::PointXYZ minPo
 
 void grid::display_dimensions()
 {
-	cout<<"Length: "<<length<<endl;
-	cout<<"Width: "<<width<<endl;
-	cout<<"Height: "<<height<<endl;
+	cout << "Length: " << length << endl;
+	cout << "Width: " << width << endl;
+	cout << "Height: " << height << endl;
 
-	cout<<"Resolution: "<<resolution<<"\n";      //<<"  "<<resolution.y<<"  "<<resolution.z<<endl<<endl;
+	cout << "Resolution: " << resolution << endl; // << "  " << resolution.y << "  " << resolution.z << endl << endl;
 
-	cout<<"Ref Point: x: "<<ref_point.x<<endl;
-	cout<<"Ref Point: y: "<<ref_point.y<<endl;
-	cout<<"Ref Point: z: "<<ref_point.z<<endl;
+	cout << "Ref Point: x: " << ref_point.x << endl;
+	cout << "Ref Point: y: " << ref_point.y << endl;
+	cout << "Ref Point: z: " << ref_point.z << endl;
 
 }
 
@@ -120,8 +120,8 @@ void grid::allocate_points_to_grid (pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl
 	double xdiff, ydiff, zdiff;
 	int xindex, yindex, zindex;
 
-	for(int i = 0; i < cloud.points.size(); i++){
-
+	for(int i = 0; i < cloud.points.size(); i++)
+	{
 		xdiff = (cloud.points[i].x - ref_point.x)/resolution ;
 		ydiff = (cloud.points[i].y - ref_point.y)/resolution ;
 		zdiff = (cloud.points[i].z - ref_point.z)/resolution ;

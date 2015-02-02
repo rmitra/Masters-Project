@@ -58,12 +58,9 @@ void find_min_max(pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointXYZ &min, p
  * returns a grid*
  * Input args are resolution, minpoint and maxpoint of the cloud
  */
-
-grid* setup_grid(pcl::PointXYZ & resolution, pcl::PointXYZ minPoint, pcl::PointXYZ maxPoint){
-
+grid* setup_grid(pcl::PointXYZ & resolution, pcl::PointXYZ minPoint, pcl::PointXYZ maxPoint)
+{
 	grid *g = new grid(resolution, minPoint, maxPoint);
-	// g->display_dimensions();
-
 	return g;
 }
 

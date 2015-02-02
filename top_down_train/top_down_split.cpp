@@ -197,7 +197,6 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 	Block b;
 
 	for(int i = begin; i <= end; i++) {
-
 		inside_loop = true;
 
 		if(plane == 0){
@@ -266,13 +265,14 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 
 	// cerr<<"Min red :"<<min_red<<" index : "<<red_cutIndex<<"\n";
 
-	if( min_red >= 0.0 && min_red < VOL_THRESHOLD){
-			gain = min_red;
-			is_red = true;
-			less_er_vol = -1.0;
+	if (min_red >= 0.0 && min_red < VOL_THRESHOLD)
+	{
+		gain = min_red;
+		is_red = true;
+		less_er_vol = -1.0;
 	}
-	else{
-
+	else
+	{
 		inside_loop = false;
 		gain = get_min_rmse_split(0, end + begin, er_l, er_u, vol_l, vol_u, er_cutIndex, less_er_vol, inside_loop);
 		// cerr<<"MAX RMSE SECOND DERIVATIVE :"<<gain<<"\n";

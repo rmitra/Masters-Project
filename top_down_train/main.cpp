@@ -5,12 +5,12 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/keypoints/iss_3d.h>
 
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud;	// Also required by draw_object.cpp
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud; // Also required by draw_object.cpp
 
 #include "grid.cpp"
 #include "split_driver.cpp"
 #include "merge_block.cpp"
-#include "draw_object.cpp"
+#include "draw.cpp"
 
 #include "point_res.cpp"
 
@@ -19,7 +19,7 @@ using namespace std;
 int main(int argc, char **argv)
 {
 	if (argc < 2) {
-		cout<<"Usage: <executable binary> <path to .ply file> <Scale for rendering>\n";
+		cout << "Usage: <executable binary> <path to .ply file> <Scale for rendering>\n";
 		exit(1);
 	}
 	
@@ -54,4 +54,4 @@ int main(int argc, char **argv)
 	draw_main(argc, argv);	
 		
 	return 0;
-}	
+}

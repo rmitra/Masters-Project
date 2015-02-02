@@ -11,7 +11,7 @@
 #include <pcl/point_types.h>
 
 #include "block.hpp"
-#include "util.hpp"
+#include "heuristics.hpp"
 
 /* end of header files */
 
@@ -23,13 +23,14 @@ using namespace std;
 class grid_element
 {
 public:
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr p_list;			// list of those points
-	pcl::PointCloud<pcl::Normal>::Ptr n_list;			// list of normals
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr p_list; // list of those points
+	pcl::PointCloud<pcl::Normal>::Ptr n_list; // list of normals
 	double r,g,b;
 
 	bool used;
 
-	grid_element(){
+	grid_element()
+	{
 		p_list = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
 		n_list = pcl::PointCloud<pcl::Normal>::Ptr(new pcl::PointCloud<pcl::Normal>);
 		used = false;

@@ -1,5 +1,5 @@
-#ifndef UTIL_HPP
-#define UTIL_HPP
+#ifndef HEURISTICS_HPP
+#define HEURISTICS_HPP
 
 #include <vector>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
@@ -37,7 +37,7 @@ bool is_spurious(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int
     return (ratio < threshold);
 }
 
-// post processing step: shrink any boxes that do not tightly bound their contained points
+// post processing sanity check step: shrink any boxes that do not tightly bound their contained points
 // in other words, if a box has some slack space, remove it
 void trim_boxes(vector<Block> &block_list)
 {
