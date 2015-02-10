@@ -18,10 +18,10 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	if (argc < 2) {
-		cout << "Usage: <executable binary> <path to .ply file> <Scale for rendering>\n";
-		exit(1);
-	}
+	// if (argc < 2) {
+	// 	cout << "Usage: <executable binary> <path to .ply file> <Scale for rendering>\n";
+	// 	exit(1);
+	// }
 	
 	grid *g;
 	
@@ -50,7 +50,8 @@ int main(int argc, char **argv)
 	g_disp->allocate_points_to_grid_display(*cloud, *cloud_normals, resolution * sub_factor);
 	g_disp->remove_voxels(threshold, false);
 	
-	initialise_parameters(g_disp, g, atoi(argv[2]), block_list, min, max);
+	initialise_parameters(g_disp, g, 2, block_list, min, max);
+	// initialise_parameters(g_disp, g, atoi(argv[2]), block_list, min, max);
 	draw_main(argc, argv);	
 		
 	return 0;
