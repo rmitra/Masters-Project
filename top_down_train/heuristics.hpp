@@ -37,13 +37,28 @@ bool is_spurious(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int i, int j, int
     return (ratio < threshold);
 }
 
-// for each box, only draw those v
+struct trimmed_block {
+    Block* block;
+    bool trimmed;
+
+    trimmed_block(Block* _block) {
+        block = _block;
+        trimmed = false;
+    }
+};
 
 // post processing sanity check step: shrink any boxes that do not tightly bound their contained points
 // in other words, if a box has some slack space, remove it
 void trim_boxes(vector<Block> &block_list)
 {
-    // cout << "topkek" << endl;
+    set<trimmed_block> s;
+    vector<Block>::iterator itr = block_list.begin();
+    for (; itr != block_list.end() ; itr++) {
+        trimmed_block t(&*itr);
+        s.insert(t);
+    }
+
+
 }
 
 #endif

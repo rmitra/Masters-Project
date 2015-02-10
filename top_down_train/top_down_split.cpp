@@ -484,16 +484,10 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 	int i = 1;
 
 	int min_dim = g->length;
-
-	if( min_dim > g->width)
-		min_dim = g->width;
-
-	if(min_dim > g->height)
-		min_dim = g->height;
+	if (min_dim > g->width) min_dim = g->width;
+	if (min_dim > g->height) min_dim = g->height;
 
 	start = max(1, (int)( ( BLOCK_SIZE_THRESHOLD * min_dim ) / 2.0 ));
-
-	// cerr<<"BLOCK_T: "<<BLOCK_SIZE_THRESHOLD<<" MINDIM: "<<min_dim<<" Start :"<<start<<"\n";
 
 	string model_name = extract_name(filename);
 
@@ -518,58 +512,29 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 		tree[tree_itr].x = top.x, tree[tree_itr].y = top.y, tree[tree_itr].z = top.z;
 		tree[tree_itr].length = top.length, tree[tree_itr].width = top.width, tree[tree_itr].height = top.height;
 
-		// cerr<<"For Box : "<<top.x<<" "<<top.y<<" "<<top.z<<" "<<top.x + top.length<<" "<<top.y + top.width<<" "<<top.z + top.height<<"\n";
-
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 		pcl::PointCloud<pcl::Normal>::Ptr cloud_normals;
 
-		//get_cloud_from_grid(top, g, cloud, cloud_normals);
-		//cerr<<"Size of cloud of model "<<sub_model_count<<" is "<<cloud->size()<<"\n";
-		//save_features(ft_dir_name, model_name, tree_itr, cloud, cloud_normals);
-
 		double rmse_3d = get_rmse_3D(g, top, kdtree_grid, true);
-
-		// cerr<<"RMSE 3D: "<<rmse_3d<<"\n";
-
-		//double size_frac_l = (double)( top.length ) / (double)(min_dim);
-		//double size_frac_w = (double)( top.width ) / (double)(min_dim);
-		//double size_frac_h = (double)( top.height ) / (double)(min_dim);
 		Block part1, part2;
 
-		if( rmse_3d > rmse_3d_thresh ){ // && size_frac_l > BLOCK_SIZE_THRESHOLD && size_frac_w > BLOCK_SIZE_THRESHOLD && size_frac_h > BLOCK_SIZE_THRESHOLD){
+		if (rmse_3d > rmse_3d_thresh) { // && size_frac_l > BLOCK_SIZE_THRESHOLD && size_frac_w > BLOCK_SIZE_THRESHOLD && size_frac_h > BLOCK_SIZE_THRESHOLD){
 			bool val = partition(g, top, part1, part2, plane, cut_index, kdtree_grid);
-			// cerr<<"Val: "<<val<<"\n";
 			if (val) {
-				//print_aspect_ratio(model_name, top, tree_itr, true, plane, cut_index, part1, part2);
-
 				s.push(part1);
-
-				//tree[2 * tree_itr].x = part1.x, tree[2 * tree_itr].y = part1.y, tree[2 * tree_itr].z = part1.z;
-				//tree[2 * tree_itr].length = part1.length, tree[2 * tree_itr].width = part1.width, tree[2 * tree_itr].height = part1.height;
 				parent.push(2 * tree_itr);
-
 				s.push(part2);
-
-				//tree[2 * tree_itr + 1].x = part2.x, tree[2 * tree_itr + 1].y = part2.y, tree[2 * tree_itr + 1].z = part2.z;
-				//tree[2 * tree_itr + 1].length = part2.length, tree[2 * tree_itr + 1].width = part2.width, tree[2 * tree_itr + 1].height = part2.height;
 				parent.push(2 * tree_itr + 1);
-
-				// cerr<<"Block 1: "<<part1.x<<" "<<part1.y<<" "<<part1.z<<" "<<part1.x + part1.length<<" "<<part1.y + part1.width<<" "<<part1.z + part1.height<<"\n";
-				// cerr<<"Block 2: "<<part2.x<<" "<<part2.y<<" "<<part2.z<<" "<<part2.x + part2.length<<" "<<part2.y + part2.width<<" "<<part2.z + part2.height<<"\n";
-				// cerr<<"\n";
 			}
 			else{
-				//print_aspect_ratio(model_name, top, tree_itr, false, -1, -1, part1, part2);
 				BlockList.push_back(top);
 			}
 		}
 		else {
-			//print_aspect_ratio(model_name, top, tree_itr, false, -1, -1, part1, part2);
 			BlockList.push_back(top);
 		}
 
 		sub_model_count++;
 	}
-	// cerr<<"BlockList size: "<<BlockList.size()<<"\n";
 	return BlockList;
 }

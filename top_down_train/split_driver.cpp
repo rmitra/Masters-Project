@@ -12,15 +12,11 @@ using namespace std;
 
 vector<Block> split_driver(char* filename, pcl::PointCloud<pcl::PointXYZRGB>::Ptr &cloud, pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals, grid * &g, pcl::PointXYZ &min, pcl::PointXYZ &max, int &length, int &width, int &height, double &resolution_in, char * ft_dir_name)
 {
-	fstream fs;
-	fs.open("../arguments.txt", fstream::in);
-
-	fs >> VOL_THRESHOLD;
-	fs >> BLOCK_SIZE_THRESHOLD;
-	fs >> DIM_FRAC; // voxel size
-
 	double rmse_3d_thresh;
-	fs >> rmse_3d_thresh;
+
+	// DIM_FRAC is voxel size
+	fstream fs; fs.open("../arguments.txt", fstream::in);
+	fs >> VOL_THRESHOLD >> BLOCK_SIZE_THRESHOLD >> DIM_FRAC >> rmse_3d_thresh;
 	fs.close();
 
 	// loading the .ply file into cloud
@@ -52,7 +48,7 @@ vector<Block> split_driver(char* filename, pcl::PointCloud<pcl::PointXYZRGB>::Pt
 
 	resolution_in = g->resolution;
 
-	Block b = Block(0, 0, 0, g->length, g->width, g->height);
+	Block b(0, 0, 0, g->length, g->width, g->height);
 
 	vector<Block> decom;
 	vector<Block> tree(20000);

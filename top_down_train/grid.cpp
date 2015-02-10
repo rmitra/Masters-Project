@@ -115,6 +115,10 @@ void grid::display_dimensions()
 
 }
 
+// The grid object has a three-dimensional array of grid_element elements
+// Each grid_element contains a bunch of points and their associated normals
+// It also contains a boolean named used which indicates whether the
+// grid_element is to be considered as a part of the final reconstruction
 void grid::allocate_points_to_grid (pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals)
 {
 	double xdiff, ydiff, zdiff;
@@ -130,19 +134,6 @@ void grid::allocate_points_to_grid (pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl
 		yindex = (int)(ydiff);	// + 1.0f);
 		zindex = (int)(zdiff);	// + 1.0f);
 
-		/*if(zindex == 20)
-			count_20++;
-		else if(zindex == 19)
-			count_19++;
-		else if(zindex == 18)
-			count_18++;
-		*/
-
-		//if(yindex - ydiff > 0.00001f)
-		//	yindex = yindex - 1;
-
-		//if(zindex - zdiff > 0.00001f)
-		//	zindex = zindex - 1;
 		data[xindex][yindex][zindex].p_list->points.push_back(cloud.points[i]);
 		data[xindex][yindex][zindex].n_list->points.push_back(cloud_normals.points[i]);
 	}
