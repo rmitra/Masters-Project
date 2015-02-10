@@ -103,105 +103,45 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 					double near_distance = 1000000;
 
 					//For side 1 //
-
 					if(i - b.x < near_distance){
-
-						//bool found = false;
-						//for(int l = i-1; l >= b.x; l--){
-						//	if(g->data[l][j][k].used)
-						//		found = true;
-						//}
-
-						//if(!found){
-							nearest_plane = 1;
-							near_distance = i - b.x;
-							is_boundary = true;
-						//}
+						nearest_plane = 1;
+						near_distance = i - b.x;
+						is_boundary = true;
 					}
 
 					//For side 2 //
-
 					if(b.x + b.length - 1 - i < near_distance){
-
-					   // bool found = false;
-						//for(int l = i+1; l < b.x + b.length; l++){
-						//	 if(g->data[l][j][k].used)
-						//	 	found = true;
-						//}
-
-						//if(!found){
-							nearest_plane = 2;
-							near_distance = b.x + b.length - 1 - i;
-							is_boundary = true;
-						//}
+						nearest_plane = 2;
+						near_distance = b.x + b.length - 1 - i;
+						is_boundary = true;
 					}
 
 					//For side 3 //
-
 					if (j - b.y < near_distance) {
-
-						//bool found = false;
-						//for(int l = j-1; l >= b.y; l--){
-						//	if(g->data[i][l][k].used)
-						//		found = true;
-						//}
-
-						//if(!found){
-							nearest_plane = 3;
-							near_distance = j - b.y;
-							is_boundary = true;
-						//}
+						nearest_plane = 3;
+						near_distance = j - b.y;
+						is_boundary = true;
 					}
 
 					//For side 4 //
-
 					if (b.y + b.width - 1 - j < near_distance) {
-
-						//bool found = false;
-						//for(int l = j+1; l < b.y + b.width; l++){
-						//	 if(g->data[i][l][k].used)
-						//	 	found = true;
-					//	}
-
-						//if(!found){
-							nearest_plane = 4;
-							near_distance = b.y + b.width - 1 - j;
-							is_boundary = true;
-					//	}
+						nearest_plane = 4;
+						near_distance = b.y + b.width - 1 - j;
+						is_boundary = true;
 					}
 
 					//For side 5 //
-
 					if (k - b.z < near_distance) {
-
-						//bool found = false;
-						//for(int l = k-1; l >= b.z; l--){
-						//	 if(g->data[i][j][l].used)
-						//	 	found = true;
-						//}
-
-						//if(!found){
-							nearest_plane = 5;
-							near_distance = k - b.z;
-							is_boundary = true;
-					//	}
+						nearest_plane = 5;
+						near_distance = k - b.z;
+						is_boundary = true;
 					}
 
 					//For side 6 //
-
 					if (b.z + b.height - 1 - k < near_distance) {
-
-						//bool found = false;
-						//for(int l = k+1; l < b.z + b.height; l++){
-						//	 if(g->data[i][j][l].used)
-						//	 	found = true;
-						//}
-
-						//if(!found){
-							nearest_plane = 6;
-							near_distance = b.z + b.height - 1 - k;
-							is_boundary = true;
-						//}
+						nearest_plane = 6;
+						near_distance = b.z + b.height - 1 - k;
+						is_boundary = true;
 					}
 
 					if (near_distance - 1 > 0) {

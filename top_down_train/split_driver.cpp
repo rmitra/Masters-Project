@@ -17,12 +17,11 @@ vector<Block> split_driver(char* filename, pcl::PointCloud<pcl::PointXYZRGB>::Pt
 
 	fs >> VOL_THRESHOLD;
 	fs >> BLOCK_SIZE_THRESHOLD;
-	fs >> DIM_FRAC;
+	fs >> DIM_FRAC; // voxel size
 
 	double rmse_3d_thresh;
 	fs >> rmse_3d_thresh;
 	fs.close();
-	// cerr << "RMSE_TH: "<<rmse_3d_thresh << endl;
 
 	// loading the .ply file into cloud
 	if (pcl::io::loadPLYFile<pcl::PointXYZRGB> (filename, *cloud) == -1)
@@ -57,9 +56,6 @@ vector<Block> split_driver(char* filename, pcl::PointCloud<pcl::PointXYZRGB>::Pt
 
 	vector<Block> decom;
 	vector<Block> tree(20000);
-
-	for(int i = 0; i<20000; i++)
-		tree[i] = Block(0,0,0,0,0,0);
 
 	decom = top_split(g, b, rmse_3d_thresh, filename, ft_dir_name, kdtree_grid, tree);
 

@@ -201,7 +201,7 @@ void grid::remove_spurious_voxels(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
 	for (int i = 0; i < length; i++) {
 		for (int j = 0; j < width; j++) {
 			for (int k = 0; k < height; k++) {
-				if (data[i][j][k].used and is_spurious(kdtree_grid, i, j, k)) {
+				if (data[i][j][k].used and is_spurious(kdtree_grid, i, j, k, 1.8, 6)) {
 					cout << "found spurious voxel " << i << " " << j << " " << k << endl;
 					// mark this is as an unused voxel i.e. ignore it in the future
 					data[i][j][k].used = false;
