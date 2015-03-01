@@ -40,8 +40,7 @@ public:
 class grid 
 {
 public:
-	//	pcl::PointXYZ resolution; // dimension of a cubical voxel
-	double resolution;
+	double resolution; // side length for a cubical voxel
 	grid_element *** data;
 	int length, width, height; // dimensions of the grid
 	pcl::PointXYZ ref_point; // here the min point is taken as the reference point
@@ -52,8 +51,8 @@ public:
 
 	void display_dimensions();
 
-	void allocate_points_to_grid (pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals);
-	void allocate_points_to_grid_display( pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals, double orig_resolution);
+	void allocate_points_to_grid(pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals);
+	void allocate_points_to_grid_display(pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals, double orig_resolution);
 
 	void remove_spurious_voxels(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid);
 	void remove_voxels(int threshold, bool disp);

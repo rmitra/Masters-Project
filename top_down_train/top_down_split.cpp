@@ -24,8 +24,6 @@ int start;
 
 double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], double vol_l[], double vol_u[], int &er_cutIndex, double &less_er_vol, bool &inside_loop)
 {
-	//double rmse_1_diff[500];
-
 	bool is_lower = false;
 
 	int temp_cut_lower = -1;
@@ -36,26 +34,17 @@ double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], doub
 	double min_rmse_lower_th = 100000.0;
 	double min_rmse_upper_th = 100000.0;
 
-	for(int i = begin + 4; i <= end - 4; i++ ){
-
+	for (int i = begin + 4; i <= end - 4; i++) {
 		if(er_l[i] < min_rmse_lower_th)
 			min_rmse_lower_th = er_l[i];
 
 		if(er_u[i] < min_rmse_upper_th)
 			min_rmse_upper_th = er_u[i];
-
-		//cerr<<"index : "<<i<<" l_err: "<<er_l[i]<<" u_err: "<<er_u[i]<<"\n";
 	}
 
-
 	for (int i = begin + 4; i <= end - 5; i++) {
-		//cerr<<"index : "<<i<<" "<<er_l[i]<<"\n";
-		//cerr<<"index : "<<i<<" "<<fabs(er_l[i] - er_l[i+1])<<"\n";
-
-		//inside_loop = true;
-
-		if( er_l[i+1] > er_l[i] && er_l[i] <= min_rmse_lower_th + 0.03){
-			if( er_l[i] < prev_rmse && er_l[i+1] - er_l[i] > max_rmse_jump - 0.03){
+		if (er_l[i+1] > er_l[i] && er_l[i] <= min_rmse_lower_th + 0.03) {
+			if (er_l[i] < prev_rmse && er_l[i+1] - er_l[i] > max_rmse_jump - 0.03) {
 				max_rmse_jump = er_l[i+1] - er_l[i];
 				temp_cut_lower = i;
 				is_lower = true;
@@ -64,16 +53,6 @@ double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], doub
 				inside_loop = true;
 			}
 		}
-		/*else if(er_l[i] > er_l[i+1] && er_l[i+1] <= min_rmse_lower_th + 0.03){
-
-			if(er_l[i] - er_l[i+1] > max_rmse_jump){
-				max_rmse_jump = er_l[i] - er_l[i+1];
-				temp_cut_lower = i;
-				is_lower = true;
-
-				inside_loop = true;
-			}
-		}*/
 
 		if (er_u[i] > er_u[i+1] && er_u[i+1] <= min_rmse_upper_th + 0.03) {
 			if (er_u[i+1] < prev_rmse && er_u[i] - er_u[i+1] > max_rmse_jump - 0.03) {
@@ -84,71 +63,16 @@ double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], doub
 				inside_loop = true;
 			}
 		}
-		/*else if(er_u[j] > er_u[j-1] && er_u[j-1] <= min_rmse_upper_th + 0.03){
-
-			if(er_u[j] - er_u[j-1] > max_rmse_jump){
-				max_rmse_jump = er_u[j] - er_u[j-1];
-				temp_cut_upper = j;
-				is_lower = false;
-
-				inside_loop = true;
-			}
-		}*/
-		//rmse_1_diff[i] = fabs(er_l[i] - er_l[i+1]);
 	}
-
-	/*
-	double max_rmse_2_diff = -1;
-	double rmse_2_diff;
-
-	cerr<<"RMSE_2_Diff\n";
-
-	for(int i = begin + 3; i <= end - 2; i++ ){
-
-		//" vol_l: "<<vol_l[i]<<" vol_u :"<<vol_u[i]<<"\n";
-
-		inside_loop = true;
-
-
-		//if( fabs(er_l[i] - er_l[i+1]) > max_rmse_jump ){
-		//	max_rmse_jump = fabs(er_l[i] - er_l[i+1]);
-		//	temp_cut = i;
-		//}
-
-
-		rmse_2_diff = fabs(rmse_1_diff[i] - rmse_1_diff[i+1]);
-
-		//cerr<<"index : "<<i<<" "<<rmse_2_diff<<"\n";
-
-		if( rmse_2_diff > max_rmse_2_diff ){
-			max_rmse_2_diff = rmse_2_diff;
-			temp_cut = i;
-		}
-
-	}
-	*/
 
 	if (inside_loop) {
-		double less_err;
-
-		if(is_lower)
-			er_cutIndex = temp_cut_lower;
+		er_cutIndex = is_lower ? temp_cut_lower : temp_cut_upper;
+		if (er_l[er_cutIndex] < er_u[er_cutIndex])
+			return er_l[er_cutIndex];
 		else
-			er_cutIndex = temp_cut_upper;
-
-
-		if(er_l[er_cutIndex] < er_u[er_cutIndex]){
-			less_err = er_l[er_cutIndex];
-
-		}
-		else{
-			less_err = er_u[er_cutIndex];
-			//err = er_u[er_cutIndex];
-		}
-		cerr<<"cut_index :"<<er_cutIndex<<" less_vol :"<<less_er_vol<<"\n";
-		return less_err;
+			return er_u[er_cutIndex];
 	}
-	else{
+	else {
 		less_er_vol = -1.0;
 		return -1.0;
 	}
@@ -171,75 +95,63 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 	double min_red = 2;			 // Anything Greater than 1 //
 	is_red = false;
 
-	bool inside_loop = false;
+	bool inside_loop = true;
 
 	int red_cutIndex = -1;
 	int er_cutIndex = -1;
 
-	int end, begin;
+	int begin = start;
+	int end;
 
-	if (plane == 0) {
-		begin = start;
+	switch (plane) {
+	case 0:
 		end = height - 1 - begin;
-	}
-	else if (plane == 1) {
-		begin = start;
+		break;
+	case 1:
 		end = width - 1 - begin;
-	}
-	else {
-		begin = start;
+		break;
+	case 2:
 		end = length - 1 - begin;
+		break;
 	}
-
-	// cerr << "For plane: " << plane << "\n";
-	// cerr << "Begin : " << begin << " End : " << end<<"\n";
 
 	Block b;
 
 	for(int i = begin; i <= end; i++) {
-		inside_loop = true;
-
-		if(plane == 0){
-
+		if(plane == 0)
+		{
 			// For lower part //
-			cal_min_max_3D_lower(g, x, y, z, x+length, y+width, z+i+1, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
-
+			cal_min_max_3D(g, x, y, z, x+length, y+width, z+i+1, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
 			b = Block(min_x_l, min_y_l, min_z_l, (max_x_l-min_x_l+1), (max_y_l-min_y_l+1), (max_z_l-min_z_l+1));
 			er_l[i] = get_rmse_3D(g, b, kdtree_grid, false);
 
 			// For upper part //
-			cal_min_max_3D_upper(g, x, y, z+i+1, x+length, y+width, z+height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
-
+			cal_min_max_3D(g, x, y, z+i+1, x+length, y+width, z+height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
 			b = Block(min_x_u, min_y_u, min_z_u, (max_x_u-min_x_u+1), (max_y_u-min_y_u+1), (max_z_u-min_z_u+1));
 			er_u[i+1] = get_rmse_3D(g, b, kdtree_grid, false);
 
 		}
-		else if(plane == 1){
-
+		else if(plane == 1)
+		{
 			// For lower part //
-			cal_min_max_3D_lower(g, x, y, z, x+length, y+i+1, z+height, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
-
+			cal_min_max_3D(g, x, y, z, x+length, y+i+1, z+height, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
 			b = Block(min_x_l, min_y_l, min_z_l, (max_x_l-min_x_l+1), (max_y_l-min_y_l+1), (max_z_l-min_z_l+1));
 			er_l[i] = get_rmse_3D(g, b, kdtree_grid, false);
 
 			// For upper part //
-			cal_min_max_3D_upper(g, x, y+i+1, z, x+length, y+width, z+height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
-
+			cal_min_max_3D(g, x, y+i+1, z, x+length, y+width, z+height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
 			b = Block(min_x_u, min_y_u, min_z_u, (max_x_u-min_x_u+1), (max_y_u-min_y_u+1), (max_z_u-min_z_u+1));
 			er_u[i+1] = get_rmse_3D(g, b, kdtree_grid, false);
 		}
-		else{
-
+		else
+		{
 			// For lower part //
-			cal_min_max_3D_lower(g, x, y, z, x+i+1, y+width, z+height, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
-
+			cal_min_max_3D(g, x, y, z, x+i+1, y+width, z+height, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
 			b = Block(min_x_l, min_y_l, min_z_l, (max_x_l-min_x_l+1), (max_y_l-min_y_l+1), (max_z_l-min_z_l+1));
 			er_l[i] = get_rmse_3D(g, b, kdtree_grid, false);
 
-
 			// For upper part //
-			cal_min_max_3D_upper(g, x+i+1, y, z, x+length, y+width, z+height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
-
+			cal_min_max_3D(g, x+i+1, y, z, x+length, y+width, z+height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
 			b = Block(min_x_u, min_y_u, min_z_u, (max_x_u-min_x_u+1), (max_y_u-min_y_u+1), (max_z_u-min_z_u+1));
 			er_u[i+1] = get_rmse_3D(g, b, kdtree_grid, false);
 		}
@@ -250,10 +162,7 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 		vol_l[i] = l_vol;
 		vol_u[i] = u_vol;
 
-		double red = ( u_vol + l_vol ) / (double)(length * width * height);
-
-		//cerr<<"index :"<<i<<" red :"<<red<<" u_vol :"<<u_vol<<" l_vol :"<<l_vol<<"\n";
-		//cerr<<min_x_l<<" "<<min_y_l<<" "<<min_z_l<<"   "<<max_x_l<<" "<<max_y_l<<" "<<max_z_l<<"       "<<min_x_u<<" "<<min_y_u<<" "<<min_z_u<<"   "<<max_x_u<<" "<<max_y_u<<" "<<max_z_u<<"\n";
+		double red = (u_vol + l_vol) / (double)(length * width * height);
 
 		if (min_red > red) {
 			min_red = red;
@@ -285,7 +194,6 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 			cutIndex = red_cutIndex;
 		else
 			cutIndex = er_cutIndex;
-
 		return gain;
 	}
 	else
@@ -293,74 +201,30 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 
 }
 
-
-double find_red(grid *g, Block &parent , int plane, int &cutIndex, bool &is_red, double &less_er_vol, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid){ 		// plane has values 0 for xz, 1 for xy and 2 for yz  //
-
-	// For XY Plane //
-
-	if(plane == 0){
-
-		double gain_red = calculate_gain_red(g, plane, parent.x, parent.y, parent.z, parent.length, parent.width, parent.height, cutIndex, is_red, less_er_vol, kdtree_grid);		// calculating gain and dir of split for XZ plane
-
-		// cerr<<"Final gain of plane XY  "<<gain_red<<"\n";
-		if(gain_red >= 0.0){
-
-			return gain_red;
-		}
-		else
-			return -1.0;
-	}
-
-	// For XZ Plane //
-
-	if(plane == 1){
-
-		double gain_red = calculate_gain_red(g, plane, parent.x, parent.y, parent.z, parent.length, parent.width, parent.height, cutIndex, is_red, less_er_vol, kdtree_grid);		// calculating gain and dir of split for XZ plane
-
-		// cerr<<"Final gain of plane XZ  "<<gain_red<<"\n";
-		if( gain_red >= 0.0 ){
-
-			return gain_red;
-		}
-		else
-			return -1.0;
-	}
-
-	// For YZ Plane //
-
-	if(plane == 2){
-
-		double gain_red = calculate_gain_red(g, plane, parent.x, parent.y, parent.z, parent.length, parent.width, parent.height, cutIndex, is_red, less_er_vol, kdtree_grid);		// calculating gain and dir of split for XZ plane
-
-		// cerr<<"Final gain of plane YZ  "<<gain_red<<"\n";
-		if( gain_red >= 0.0 ){
-
-			return gain_red;
-		}
-		else
-			return -1.0;
-	}
+// plane has values 0 for xz, 1 for xy and 2 for yz  //
+double find_red(grid *g, Block &parent, int plane, int &cutIndex, bool &is_red, double &less_er_vol, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
+{
+	// calculating gain and dir of split for the plane
+	double gain_red = calculate_gain_red(g, plane, parent.x, parent.y, parent.z, parent.length, parent.width, parent.height, cutIndex, is_red, less_er_vol, kdtree_grid);
+	return (gain_red >= 0 ? gain_red : -1);
 }
 
 bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &final_cutIndex, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid){
 
 	int cutIndex_0, cutIndex_1, cutIndex_2;
-	// int final_cutIndex;
 
 	double min_gain_red = 100000;	// Any Big Number //
 	double gain_red_0, gain_red_1, gain_red_2;
-	// int plane;
 
 	bool is_red_0, is_red_1, is_red_2;
 	double vol_0, vol_1, vol_2;
 
-	gain_red_0 = find_red(g, parent, 0, cutIndex_0, is_red_0, vol_0, kdtree_grid);							// Finding gain in direction 0
-	gain_red_1 = find_red(g, parent, 1, cutIndex_1, is_red_1, vol_1, kdtree_grid);							// Finding gain in direction 1
-	gain_red_2 = find_red(g, parent, 2, cutIndex_2, is_red_2, vol_2, kdtree_grid);							// Finding gain in direction 2
+	gain_red_0 = find_red(g, parent, 0, cutIndex_0, is_red_0, vol_0, kdtree_grid); // Finding gain in direction 0
+	gain_red_1 = find_red(g, parent, 1, cutIndex_1, is_red_1, vol_1, kdtree_grid); // Finding gain in direction 1
+	gain_red_2 = find_red(g, parent, 2, cutIndex_2, is_red_2, vol_2, kdtree_grid); // Finding gain in direction 2
 
-	if(gain_red_0 >= 0.0 || gain_red_1 >= 0.0 || gain_red_2 >= 0.0){
-		if(is_red_0 != true && is_red_1 != true && is_red_2 != true){
-
+	if (gain_red_0 >= 0.0 || gain_red_1 >= 0.0 || gain_red_2 >= 0.0) {
+		if (!is_red_0 && !is_red_1 && !is_red_2) {
 			double min_err = gain_red_0;
 
 			if(gain_red_1 < min_err)
@@ -369,10 +233,9 @@ bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &
 			if(gain_red_2 < min_err)
 				min_err = gain_red_2;
 
-
 			double allowance = 0.001;
 
-			if(min_err < 0.0 )
+			if(min_err < 0.0)
 				return false;
 
 			double max_vol = -1.0;
@@ -380,30 +243,22 @@ bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &
 			if(gain_red_0 < min_err + allowance ){// && vol_0 > max_vol){
 				plane = 0;
 				final_cutIndex = cutIndex_0;
-
 				max_vol = vol_0;
-
 			}
 
 			if(gain_red_1 < min_err + allowance){// && vol_1 > max_vol){
 				plane = 1;
 				final_cutIndex = cutIndex_1;
-
 				max_vol = vol_1;
-
 			}
 
 			if(gain_red_2 < min_err + allowance){// && vol_2 > max_vol){
 				plane = 2;
 				final_cutIndex = cutIndex_2;
-
 				max_vol = vol_2;
-
 			}
-
 		}
 		else{
-
 			if(is_red_0 == true){
 				min_gain_red = gain_red_0, plane = 0, final_cutIndex = cutIndex_0;
 			}
@@ -412,18 +267,13 @@ bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &
 				if(gain_red_1 < min_gain_red){
 					min_gain_red = gain_red_1, plane = 1, final_cutIndex = cutIndex_1;
 				}
-
 			}
-
 			if(is_red_2 == true){
 				if(gain_red_2 < min_gain_red){
 					min_gain_red = gain_red_2, plane = 2, final_cutIndex = cutIndex_2;
 				}
-
 			}
-
 		}
-
 	}
 	else{
 		return false;
@@ -434,25 +284,19 @@ bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &
 	int min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l;
 	int min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u;
 
-	if(plane == 0){
-
-			cal_min_max_3D_lower( g, parent.x, parent.y, parent.z, parent.x + parent.length, parent.y + parent.width, parent.z + final_cutIndex + 1, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
-			cal_min_max_3D_upper( g, parent.x, parent.y, parent.z + final_cutIndex + 1 , parent.x + parent.length, parent.y + parent.width, parent.z + parent.height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
-
+	if (plane == 0) {
+		cal_min_max_3D( g, parent.x, parent.y, parent.z, parent.x + parent.length, parent.y + parent.width, parent.z + final_cutIndex + 1, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
+		cal_min_max_3D( g, parent.x, parent.y, parent.z + final_cutIndex + 1 , parent.x + parent.length, parent.y + parent.width, parent.z + parent.height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
 	}
 
-	if(plane == 1){
-
-			cal_min_max_3D_lower( g, parent.x, parent.y, parent.z, parent.x + parent.length, parent.y + final_cutIndex + 1, parent.z + parent.height, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
-			cal_min_max_3D_upper( g, parent.x, parent.y + final_cutIndex + 1, parent.z, parent.x + parent.length, parent.y + parent.width, parent.z + parent.height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
-
-
+	if (plane == 1) {
+		cal_min_max_3D( g, parent.x, parent.y, parent.z, parent.x + parent.length, parent.y + final_cutIndex + 1, parent.z + parent.height, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
+		cal_min_max_3D( g, parent.x, parent.y + final_cutIndex + 1, parent.z, parent.x + parent.length, parent.y + parent.width, parent.z + parent.height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
 	}
 
-	if(plane == 2){
-
-			cal_min_max_3D_lower( g, parent.x, parent.y, parent.z, parent.x + final_cutIndex + 1, parent.y + parent.width, parent.z + parent.height, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
-			cal_min_max_3D_upper( g, parent.x + final_cutIndex + 1, parent.y, parent.z, parent.x + parent.length, parent.y + parent.width, parent.z + parent.height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
+	if (plane == 2) {
+		cal_min_max_3D( g, parent.x, parent.y, parent.z, parent.x + final_cutIndex + 1, parent.y + parent.width, parent.z + parent.height, plane, min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l);
+		cal_min_max_3D( g, parent.x + final_cutIndex + 1, parent.y, parent.z, parent.x + parent.length, parent.y + parent.width, parent.z + parent.height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
 	}
 
 
@@ -460,14 +304,14 @@ bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &
 	// cerr<<"Upper Block: "<<min_x_u<<" "<<min_y_u<<"  "<<min_z_u<<"  "<<max_x_u<<"  "<<max_y_u<<"  "<<max_z_u<<"\n";
 
 	//if(min_gain < GAIN_THRESHOLD){
-		ch1.x = min_x_l, ch1.y = min_y_l, ch1.z = min_z_l;
-		ch1.length = (max_x_l - min_x_l + 1), ch1.width = (max_y_l - min_y_l + 1), ch1.height = (max_z_l - min_z_l + 1);
+	ch1.x = min_x_l, ch1.y = min_y_l, ch1.z = min_z_l;
+	ch1.length = (max_x_l - min_x_l + 1), ch1.width = (max_y_l - min_y_l + 1), ch1.height = (max_z_l - min_z_l + 1);
 
-		ch2.x = min_x_u, ch2.y = min_y_u, ch2.z = min_z_u;
-		ch2.length = (max_x_u - min_x_u + 1), ch2.width = (max_y_u - min_y_u + 1), ch2.height = (max_z_u - min_z_u + 1);
+	ch2.x = min_x_u, ch2.y = min_y_u, ch2.z = min_z_u;
+	ch2.length = (max_x_u - min_x_u + 1), ch2.width = (max_y_u - min_y_u + 1), ch2.height = (max_z_u - min_z_u + 1);
 
-		return true;
-
+	return true;
+	// }
 }
 
 
@@ -491,7 +335,6 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 
 	string model_name = extract_name(filename);
 
-	int sub_model_count = 1;
 	int plane, cut_index;
 	int loop_count = 0;
 	int tree_itr = 1;
@@ -507,7 +350,7 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 		tree_itr = parent.top();
 		parent.pop();
 
-		cerr<<"Tree Itr :"<<tree_itr<<"\n";
+		// cerr<<"Tree Itr :"<<tree_itr<<"\n";
 
 		tree[tree_itr].x = top.x, tree[tree_itr].y = top.y, tree[tree_itr].z = top.z;
 		tree[tree_itr].length = top.length, tree[tree_itr].width = top.width, tree[tree_itr].height = top.height;
@@ -533,8 +376,6 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 		else {
 			BlockList.push_back(top);
 		}
-
-		sub_model_count++;
 	}
 	return BlockList;
 }

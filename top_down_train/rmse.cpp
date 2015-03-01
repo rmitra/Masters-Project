@@ -218,81 +218,18 @@ void cal_min_max_3D(grid * g, int start_x, int start_y, int start_z, int stop_x,
 }
 */
 
-void cal_min_max_3D_upper(grid * g, int start_x, int start_y, int start_z, int stop_x, int stop_y, int stop_z, int plane, int &min_x, int &min_y, int &min_z, int &max_x, int &max_y, int &max_z)
+// void cal_min_max_3D_upper(grid * g, int start_x, int start_y, int start_z, int stop_x, int stop_y, int stop_z, int plane, int &min_x, int &min_y, int &min_z, int &max_x, int &max_y, int &max_z)
+void cal_min_max_3D(grid * g, int start_x, int start_y, int start_z, int stop_x, int stop_y, int stop_z, int plane, int &min_x, int &min_y, int &min_z, int &max_x, int &max_y, int &max_z)
 {
 	min_x = stop_x, min_y = stop_y, min_z = stop_z;
 	max_x = start_x-1, max_y = start_y-1, max_z = start_z-1;
 
-	/*
-	if(plane == 0)
-		min_z = start_z;
-	else if(plane == 1)
-		min_y = start_y;
-	else
-		min_x = start_x;
-	*/
-
 	bool found_data = false;
 
-	for(int i = start_x; i<stop_x; i++){
-		for(int j = start_y; j<stop_y; j++){
-			for(int k = start_z; k<stop_z; k++){
-
-				if(g->data[i][j][k].used == true)
-				{
-					found_data = true;
-
-					if(min_x > i) // && plane != 2)
-						min_x = i;
-
-					if(min_y > j) // && plane != 1)
-						min_y = j;
-
-					if(min_z > k) // && plane != 0
-						min_z = k;
-
-					if(max_x < i)
-						max_x = i;
-
-					if(max_y < j)
-						max_y = j;
-
-					if(max_z < k)
-						max_z = k;
-
-				}
-
-			}
-		}
-	}
-
-	if(!found_data){
-		max_x = 0, min_x = 1;
-		max_y = 0, min_y = 1;
-		max_z = 0, min_z = 1;
-	}
-
-}
-
-void cal_min_max_3D_lower(grid * g, int start_x, int start_y, int start_z, int stop_x, int stop_y, int stop_z, int plane, int &min_x, int &min_y, int &min_z, int &max_x, int &max_y, int &max_z){
-
-	min_x = stop_x, min_y = stop_y, min_z = stop_z;
-	max_x = start_x-1, max_y = start_y-1, max_z = start_z-1;
-
-	/*
-	if(plane == 0)
-		max_z = stop_z - 1;
-	else if(plane == 1)
-		max_y = stop_y - 1;
-	else
-		max_x = stop_x - 1;
-	*/
-	bool found_data = false;
-
-	for (int i = start_x; i<stop_x; i++) {
-		for (int j = start_y; j<stop_y; j++) {
-			for (int k = start_z; k<stop_z; k++) {
-				if (g->data[i][j][k].used == true) {
+	for (int i = start_x; i < stop_x; i++) {
+		for (int j = start_y; j < stop_y; j++) {
+			for (int k = start_z; k < stop_z; k++) {
+				if (g->data[i][j][k].used) {
 					found_data = true;
 
 					if(min_x > i)
@@ -304,25 +241,64 @@ void cal_min_max_3D_lower(grid * g, int start_x, int start_y, int start_z, int s
 					if(min_z > k)
 						min_z = k;
 
-					if( max_x < i ) // && plane != 2)
+					if(max_x < i)
 						max_x = i;
 
-					if(max_y < j) // && plane != 1)
+					if(max_y < j)
 						max_y = j;
 
-					if(max_z < k) // && plane != 0)
+					if(max_z < k)
 						max_z = k;
-
 				}
-
 			}
 		}
 	}
 
-	if(!found_data)
-	{
+	if(!found_data) {
 		max_x = 0, min_x = 1;
 		max_y = 0, min_y = 1;
 		max_z = 0, min_z = 1;
 	}
 }
+
+// void cal_min_max_3D_lower(grid * g, int start_x, int start_y, int start_z, int stop_x, int stop_y, int stop_z, int plane, int &min_x, int &min_y, int &min_z, int &max_x, int &max_y, int &max_z)
+// {
+// 	min_x = stop_x, min_y = stop_y, min_z = stop_z;
+// 	max_x = start_x-1, max_y = start_y-1, max_z = start_z-1;
+
+// 	bool found_data = false;
+
+// 	for (int i = start_x; i < stop_x; i++) {
+// 		for (int j = start_y; j < stop_y; j++) {
+// 			for (int k = start_z; k < stop_z; k++) {
+// 				if (g->data[i][j][k].used) {
+// 					found_data = true;
+
+// 					if(min_x > i)
+// 						min_x = i;
+
+// 					if(min_y > j)
+// 						min_y = j;
+
+// 					if(min_z > k)
+// 						min_z = k;
+
+// 					if(max_x < i)
+// 						max_x = i;
+
+// 					if(max_y < j)
+// 						max_y = j;
+
+// 					if(max_z < k)
+// 						max_z = k;
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	if(!found_data) {
+// 		max_x = 0, min_x = 1;
+// 		max_y = 0, min_y = 1;
+// 		max_z = 0, min_z = 1;
+// 	}
+// }

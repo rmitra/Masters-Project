@@ -19,29 +19,9 @@ grid::grid(pcl::PointXYZ res, pcl::PointXYZ minPoint, pcl::PointXYZ maxPoint){
 			resolution = res.z;
 	}
 
-	// double xdiff_int = (int)( ((maxPoint.x - minPoint.x)/resolution) + 1.0f );
-	// double xdiff = (maxPoint.x - minPoint.x)/resolution;
-
-	//if( xdiff_int - xdiff < 0.00001f)
-	//	length = (int)( ((maxPoint.x - minPoint.x)/resolution) + 1.5f);
-	//else
-		length = (int)( ((maxPoint.x - minPoint.x)/resolution) + 1.0f);
-
-	// double ydiff_int = (int)( ((maxPoint.y - minPoint.y)/resolution) + 1.0f );
-	// double ydiff = (maxPoint.y - minPoint.y)/resolution;
-
-	//if( ydiff_int - ydiff < 0.00001f)
-	//	width = (int)( ((maxPoint.y - minPoint.y)/resolution) + 1.5f);
-	//else
-		width = (int)( ((maxPoint.y - minPoint.y)/resolution) + 1.0f);
-
-	// double zdiff_int = (int)( ((maxPoint.z - minPoint.z)/resolution) + 1.0f );
-	// double zdiff = (maxPoint.z - minPoint.z)/resolution;
-
-	//if( zdiff_int - zdiff < 0.00001f)
-	//	height = (int)( ((maxPoint.z - minPoint.z)/resolution) + 1.5f);
-	//else
-		height = (int)( ((maxPoint.z - minPoint.z)/resolution) + 1.0f);
+	length = (int)( ((maxPoint.x - minPoint.x)/resolution) + 1.0f);
+	width = (int)( ((maxPoint.y - minPoint.y)/resolution) + 1.0f);
+	height = (int)( ((maxPoint.z - minPoint.z)/resolution) + 1.0f);
 
 	data  = new grid_element** [length];
 
@@ -54,7 +34,7 @@ grid::grid(pcl::PointXYZ res, pcl::PointXYZ minPoint, pcl::PointXYZ maxPoint){
 
 	ref_point = minPoint;
 
-	cerr << "Created Grid with dimensions " << length << " " << width << " " << height << ". ";
+	// cerr << "Created Grid with dimensions " << length << " " << width << " " << height << ". ";
 }
 
 grid::grid(double res, pcl::PointXYZ minPoint, pcl::PointXYZ maxPoint)
@@ -74,7 +54,7 @@ grid::grid(double res, pcl::PointXYZ minPoint, pcl::PointXYZ maxPoint)
 			data[i][j] = new grid_element[height];
 	}
 
-	cerr << "Created Grid with dimensions " << length << " " << width << " " << height << ". ";
+	// cerr << "Created Grid with dimensions " << length << " " << width << " " << height << ". ";
 
 	ref_point = minPoint;
 }
@@ -97,7 +77,7 @@ grid::grid(int _length, int _width, int _height, double res, pcl::PointXYZ minPo
 	}
 
 
-	cerr << "Created Grid with dimensions " << length << " " << width << " " << height << ". ";
+	// cerr << "Created Grid with dimensions " << length << " " << width << " " << height << ". ";
 	ref_point = minPoint;
 }
 
@@ -112,7 +92,6 @@ void grid::display_dimensions()
 	cout << "Ref Point: x: " << ref_point.x << endl;
 	cout << "Ref Point: y: " << ref_point.y << endl;
 	cout << "Ref Point: z: " << ref_point.z << endl;
-
 }
 
 // The grid object has a three-dimensional array of grid_element elements
@@ -124,6 +103,7 @@ void grid::allocate_points_to_grid (pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl
 	double xdiff, ydiff, zdiff;
 	int xindex, yindex, zindex;
 
+	// assign each point to a grid index
 	for(int i = 0; i < cloud.points.size(); i++)
 	{
 		xdiff = (cloud.points[i].x - ref_point.x)/resolution ;
@@ -137,8 +117,6 @@ void grid::allocate_points_to_grid (pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl
 		data[xindex][yindex][zindex].p_list->points.push_back(cloud.points[i]);
 		data[xindex][yindex][zindex].n_list->points.push_back(cloud_normals.points[i]);
 	}
-
-	return;
 }
 
 void grid::allocate_points_to_grid_display( pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals, double orig_resolution)
@@ -183,8 +161,6 @@ void grid::allocate_points_to_grid_display( pcl::PointCloud<pcl::PointXYZRGB> cl
 		data[xindex][yindex][zindex].p_list->points.push_back(cloud.points[i]);
 		data[xindex][yindex][zindex].n_list->points.push_back(cloud_normals.points[i]);
 	}
-
-	return;
 }
 
 void grid::remove_spurious_voxels(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
@@ -193,7 +169,7 @@ void grid::remove_spurious_voxels(pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
 		for (int j = 0; j < width; j++) {
 			for (int k = 0; k < height; k++) {
 				if (data[i][j][k].used and is_spurious(kdtree_grid, i, j, k, 1.8, 6)) {
-					cout << "found spurious voxel " << i << " " << j << " " << k << endl;
+					// cout << "found spurious voxel " << i << " " << j << " " << k << endl;
 					// mark this is as an unused voxel i.e. ignore it in the future
 					data[i][j][k].used = false;
 				}

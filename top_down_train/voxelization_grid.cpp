@@ -91,13 +91,13 @@ void set_kdtree_grid(grid *g, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
 }
 
 
-void voxelize(grid *g, pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int threshold){
-
+void voxelize(grid *g, pcl::PointCloud<pcl::PointXYZRGB> cloud, pcl::PointCloud<pcl::Normal> cloud_normals, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, int threshold)
+{
 	g->allocate_points_to_grid(cloud, cloud_normals);
 	g->remove_voxels(threshold, false);
 
 	set_kdtree_grid(g, kdtree_grid);
-	g->remove_spurious_voxels(kdtree_grid);
+	// g->remove_spurious_voxels(kdtree_grid);
 }
 
 void set_resolution(pcl::PointXYZ & resolution, pcl::PointXYZ minPoint, pcl::PointXYZ maxPoint){

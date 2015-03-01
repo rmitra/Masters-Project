@@ -1,4 +1,4 @@
-//g++ -lglut -lGL -lGLU sample3Dcube2.cpp 
+//g++ -lglut -lGL -lGLU sample3Dcube2.cpp
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -16,7 +16,7 @@
 #define LIMIT 20000
 
 
-using namespace std; 
+using namespace std;
 
 int angy = 0;
 int angz = 0;
@@ -24,16 +24,16 @@ int angx = 0;
 
 GLdouble scalex, scaley, scalez;
 double pt_scx, pt_scy, pt_scz;
-double pt_trx, pt_try, pt_trz;    
+double pt_trx, pt_try, pt_trz;
 
 double	Ex = 0,    // 1717 ,
 		Ey = 0, // 50.5 ,
 		Ez = 800, // 734.3,
-			
+
 		Ax = 0, //-525.2 ,
 		Ay = 0, //111.1,
 		Az = -1, //-10,
-				  				
+
 		Ux = 0.0,
 		Uy = 1.0, //-1.0,
 		Uz = 0.0;
@@ -41,7 +41,7 @@ double	Ex = 0,    // 1717 ,
 char toChange = 'e';
 char mode = 'n' ;
 
-bool show_cloud = false;	
+bool show_cloud = false;
 bool step_wise = false;
 bool show_texture = false;
 
@@ -64,7 +64,7 @@ void KeyPressed (unsigned char key, int x, int y);
 vector<Block> list_of_blocks;
 queue<int> tree_q;
 
-void init() 
+void init()
 {
 	glEnable(GL_DEPTH_TEST);
 	glClearColor (0.1, 0.1, 0.1, 0.0);
@@ -77,7 +77,7 @@ void set_cuboid_color(grid *_g, cuboid &c, int x, int y, int z){
 		c.r = _g->data[x][y][z].r;
 		c.g = _g->data[x][y][z].g;
 		c.b = _g->data[x][y][z].b;
-	
+
 		c.al = 1;
 	}
 	else{
@@ -87,7 +87,7 @@ void set_cuboid_color(grid *_g, cuboid &c, int x, int y, int z){
 }
 
 void set_random_color(cuboid &c){
-	
+
 	c.r = (GLdouble)(rand()%100)/100.0f;
 	c.g = (GLdouble)(rand()%100)/100.0f;
 	c.b = (GLdouble)(rand()%100)/100.0f;
@@ -96,43 +96,43 @@ void set_random_color(cuboid &c){
 
 
 void draw_points(){
-	
+
 	double x, y, z;
-	
+
 	glColor4f(1.0,0.0,0.0,1);
-	
+
 	glBegin(GL_POINTS);
 		for(int i = 0; i < cloud->size(); i++){
-		
-			x = (cloud->points[i].x - pt_trx) / pt_scx; 
+
+			x = (cloud->points[i].x - pt_trx) / pt_scx;
 			y = (cloud->points[i].y - pt_try) / pt_scy;
 			z = (cloud->points[i].z - pt_trz) / pt_scz;
-		
+
 			glVertex3f(x*scalex, y*scaley, z*scalez);
-		
+
 		}
-	glEnd();			
+	glEnd();
 }
 
 
 void draw_grid(){
-	
+
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	
+
 	glBegin(GL_QUADS);
-		
+
 		glColor4f(0.0,1.0,0.0,1);
-		
+
 		for(int j = 0; j<2; j++)
 		  {
 			glVertex3f( gr.faces[j].at(0).at(0)*scalex, gr.faces[j].at(0).at(1)*scaley, gr.faces[j].at(0).at(2)*scalez );
 	        glVertex3f( gr.faces[j].at(1).at(0)*scalex, gr.faces[j].at(1).at(1)*scaley, gr.faces[j].at(1).at(2)*scalez );
 	        glVertex3f( gr.faces[j].at(2).at(0)*scalex, gr.faces[j].at(2).at(1)*scaley, gr.faces[j].at(2).at(2)*scalez );
 	        glVertex3f( gr.faces[j].at(3).at(0)*scalex, gr.faces[j].at(3).at(1)*scaley, gr.faces[j].at(3).at(2)*scalez );
-	      }		
-	
+	      }
+
 		glColor4f(1.0,0.0,0.0,1);
-		
+
 		for(int j = 2; j<4; j++)
 		  {
 			glVertex3f( gr.faces[j].at(0).at(0)*scalex, gr.faces[j].at(0).at(1)*scaley, gr.faces[j].at(0).at(2)*scalez );
@@ -140,9 +140,9 @@ void draw_grid(){
 	        glVertex3f( gr.faces[j].at(2).at(0)*scalex, gr.faces[j].at(2).at(1)*scaley, gr.faces[j].at(2).at(2)*scalez );
 	        glVertex3f( gr.faces[j].at(3).at(0)*scalex, gr.faces[j].at(3).at(1)*scaley, gr.faces[j].at(3).at(2)*scalez );
 	      }
-	      
-		
-		glColor4f(0.0,0.0,1.0,1);	
+
+
+		glColor4f(0.0,0.0,1.0,1);
 		for(int j = 4; j<6; j++)
 		  {
 			glVertex3f( gr.faces[j].at(0).at(0)*scalex, gr.faces[j].at(0).at(1)*scaley, gr.faces[j].at(0).at(2)*scalez );
@@ -150,59 +150,59 @@ void draw_grid(){
 	        glVertex3f( gr.faces[j].at(2).at(0)*scalex, gr.faces[j].at(2).at(1)*scaley, gr.faces[j].at(2).at(2)*scalez );
 	        glVertex3f( gr.faces[j].at(3).at(0)*scalex, gr.faces[j].at(3).at(1)*scaley, gr.faces[j].at(3).at(2)*scalez );
 	      }
-	
+
 	glEnd();
-	
+
 }
 
 
-void display(void) 
+void display(void)
 {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity ();            /* clear the matrix */
-	
-	
+
+
 	gluLookAt (Ex, Ey, Ez,\
 			   Ax,Ay,Az,\
 			   Ux,Uy,Uz\
 			   );
-	
-	//cout<<"\n"<<Ex<<" "<<Ey<<" "<<Ez<<" "<<Ax<<" "<<Ay<<" "<<Az<<endl;			
+
+	//cout<<"\n"<<Ex<<" "<<Ey<<" "<<Ez<<" "<<Ax<<" "<<Ay<<" "<<Az<<endl;
 	glColor3f(0.4,0.4,0.4);
 
 	glPushMatrix();
   //glScalef(1,1,1);
-  
+
 	// glTranslatef(grid_length*scalex/(double)2, grid_width*scaley/(double)2, grid_height*scalez/(double)2);
-  
+
 	glRotatef(angx,1,0,0);
 	glRotatef(angy,0,1,0);
 	glRotatef(angz,0,0,1);
-  
+
 	glTranslatef(-grid_length*scalex/(double)2, -grid_width*scaley/(double)2, -grid_height*scalez/(double)2);
-  
+
 	draw_grid();
-	
+
 	double alpha = 1.0;
-	
+
 	if(show_cloud){
 		draw_points();
 		alpha = 0.5;
-	}	
-	
+	}
+
 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-  
-	glBegin(GL_QUADS);               
-      
+
+	glBegin(GL_QUADS);
+
 		  if(step_wise){
-			
+
 			for(int i = 0; i <= box_no; i++){
 				if(!show_cloud)
 					glColor4f(c_list[i].r, c_list[i].g, c_list[i].b, c_list[i].al * alpha);
 				else
-					glColor4f(1.0, 1.0, 1.0, alpha);	
-				
+					glColor4f(1.0, 1.0, 1.0, alpha);
+
 				for(int j = 0; j<6; j++)
 				{
 					glVertex3f( c_list[i].faces[j].at(0).at(0)*scalex, c_list[i].faces[j].at(0).at(1)*scaley, c_list[i].faces[j].at(0).at(2)*scalez );
@@ -210,28 +210,28 @@ void display(void)
 					glVertex3f( c_list[i].faces[j].at(2).at(0)*scalex, c_list[i].faces[j].at(2).at(1)*scaley, c_list[i].faces[j].at(2).at(2)*scalez );
 					glVertex3f( c_list[i].faces[j].at(3).at(0)*scalex, c_list[i].faces[j].at(3).at(1)*scaley, c_list[i].faces[j].at(3).at(2)*scalez );
 				}
-		  
+
 			}
-		  }			  	
-		  else{	
+		  }
+		  else{
 			for(int i = 0; i < c_list.size(); i++){
 				if(!show_cloud)
 					glColor4f(c_list[i].r, c_list[i].g, c_list[i].b, c_list[i].al * alpha);
 				else
-					glColor4f(1.0, 1.0, 1.0, alpha);	
-				
+					glColor4f(1.0, 1.0, 1.0, alpha);
+
 				for(int j = 0; j<6; j++)
 				{
 					glVertex3f( c_list[i].faces[j].at(0).at(0)*scalex, c_list[i].faces[j].at(0).at(1)*scaley, c_list[i].faces[j].at(0).at(2)*scalez );
 					glVertex3f( c_list[i].faces[j].at(1).at(0)*scalex, c_list[i].faces[j].at(1).at(1)*scaley, c_list[i].faces[j].at(1).at(2)*scalez );
 					glVertex3f( c_list[i].faces[j].at(2).at(0)*scalex, c_list[i].faces[j].at(2).at(1)*scaley, c_list[i].faces[j].at(2).at(2)*scalez );
 					glVertex3f( c_list[i].faces[j].at(3).at(0)*scalex, c_list[i].faces[j].at(3).at(1)*scaley, c_list[i].faces[j].at(3).at(2)*scalez );
-				}			  	
-      
+				}
+
 			}
-		}	 	
+		}
      glEnd();  // End of drawing color-cube
- 
+
    glPopMatrix();
 
    glutSwapBuffers();
@@ -243,35 +243,35 @@ void reshape(int w, int h)
   if(h == 0) h = 1; 	//divide by zero
 
   float ratio = 1.0f * w / h;
-  
+
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  
+
   glViewport(0, 0, w, h);
   gluPerspective(20, ratio, 5, 5000);
-  
+
   glMatrixMode(GL_MODELVIEW);
-  
+
   glLoadIdentity();
 }
 
 void set_next_level(){
-	
+
 		cuboid c;
 		c_list.clear();
 		int curr_size = tree_q.size();
-		
+
 		for(int i = 0; i < curr_size; i++){
 			int t = tree_q.front();
-			
+
 			//cerr<<"The value of t: "<<t<<"\n";
-			
+
 			if(list_of_blocks[2*t].length != 0)
 				tree_q.push(2*t);
-				
+
 			if(list_of_blocks[2*t + 1].length != 0)
-				tree_q.push(2*t + 1);	
-		
+				tree_q.push(2*t + 1);
+
 			if(list_of_blocks[2*t].length != 0 || list_of_blocks[2*t + 1].length != 0)
 				tree_q.pop();
 			else{
@@ -279,81 +279,67 @@ void set_next_level(){
 				tree_q.pop();
 				tree_q.push(j);
 			}
-		
+
 		}
-			
+
 		n = box_no = tree_q.size();
-				
-		for(int i = 0; i < n; i++){	
-			
+
+		for(int i = 0; i < n; i++){
+
 			x = list_of_blocks[ tree_q.front() ].x;  y = list_of_blocks[ tree_q.front() ].y;  z = list_of_blocks[ tree_q.front() ].z;
 			l = list_of_blocks[ tree_q.front() ].length;  w = list_of_blocks[ tree_q.front() ].width;  h = list_of_blocks[ tree_q.front() ].height;
-	
+
 			c = cuboid();
-			set_cuboid_c(c, x, y, z, l, w, h);	
+			set_cuboid_c(c, x, y, z, l, w, h);
 			set_random_color(c);
 			c_list.push_back(c);
-		
+
 			int temp = tree_q.front();
 			tree_q.pop();
-			
+
 			tree_q.push(temp);
-			
+
 		}
-	
+
 }
 
-void initialise_parameters(grid *_g_disp, grid *_g, GLdouble scale_i, vector<Block> &block_list, pcl::PointXYZ min, pcl::PointXYZ max){
-
-	
+void initialise_parameters(grid *_g_disp, grid *_g, GLdouble scale_i, vector<Block> &block_list, pcl::PointXYZ min, pcl::PointXYZ max)
+{
 	g_disp = _g_disp;
 	g = _g;
 
 	cuboid c;
 	scale = scale_i;
-	
+
 	scalex = scaley = scalez = 1.0;
-	
+
 	scalex = scalex * scale ;
 	scaley = scaley * scale ;
-	scalez = scalez * scale ;	
-	
+	scalez = scalez * scale ;
+
 	grid_length = g->length; grid_width = g->width; grid_height = g->height;
-	
+
 	set_cuboid_c(gr, 0, 0, 0, grid_length, grid_width, grid_height);
-	
+
 	list_of_blocks = block_list;
-	
+
 	n = box_no = block_list.size();
-		
+
 	double x_factor = (double)g_disp->length / (double)g->length;
 	double y_factor = (double)g_disp->width / (double)g->width;
 	double z_factor = (double)g_disp->height / (double)g->height;
 
 	for(int i=0; i<n; i++){
-		// For Texture 
+		// For Texture
 
 		x = block_list[i].x * 3 ;  y = block_list[i].y * 3;  z = block_list[i].z * 3;
 		l = block_list[i].length * 3;  w = block_list[i].width * 3;  h = block_list[i].height * 3;
-	
-		cerr<<x<<" "<<y<<" "<<z<<"   "<<l<<" "<<w<<" "<<h<<"\n";
-				
+
+		// cerr<<x<<" "<<y<<" "<<z<<"   "<<l<<" "<<w<<" "<<h<<"\n";
+
 		add_to_clist(g_disp, x, y, z, l, w, h);
-		//for(int j = x; j < x + l && j < g_disp->length; j++){
-			//for(int k = y; k < y + w && k < g_disp->width; k++){
-				//for(int m = z; m < z + h && m < g_disp->height; m++){
-			
-					//c = cuboid();
-					//set_cuboid_c(c, j, k, m, 1, 1, 1);	
-					//set_cuboid_color(g_disp, c, j, k, m);
-					//c_list_texture.push_back(c);
-					
-				//}
-			//}		
-		//}	
-	
-		//cerr<<"V Count: "<<v_count<<"\n";
-		// For non texture 
+
+		// For non texture
 
 		x = block_list[i].x;  y = block_list[i].y;  z = block_list[i].z;
 		l = block_list[i].length;  w = block_list[i].width;  h = block_list[i].height;
@@ -363,67 +349,49 @@ void initialise_parameters(grid *_g_disp, grid *_g, GLdouble scale_i, vector<Blo
 		c.g = (GLdouble)(rand()%100)/100.0f;
 		c.b = (GLdouble)(rand()%100)/100.0f;
 		c.al = 1;
-		set_cuboid_c(c, x, y, z, l, w, h);	
+		set_cuboid_c(c, x, y, z, l, w, h);
 		c_list_no_texture.push_back(c);
 
 	}
-	
+
 	c_list = c_list_no_texture;
 
-	//cerr<<"C_LIST size: "<<c_list.size()<<"\n";
-	
-	
-	/*
-	tree_q.push(1);
-	
-	x = block_list[1].x;  y = block_list[1].y;  z = block_list[1].z;
-	l = block_list[1].length;  w = block_list[1].width;  h = block_list[1].height;
-	
-	c = cuboid();
-	set_cuboid_c(c, x, y, z, l, w, h);	
-	set_random_color(c);
-	c_list.push_back(c);
-		
-	n = box_no = 1; 
-	*/
-	
 	pt_scx = pt_scy = pt_scz = g->resolution;
-	
+
 	pt_trx = min.x;
 	pt_try = min.y;
 	pt_trz = min.z;
-
-}	
+}
 
 
 int draw_main(int argc,char* argv[])
 {
 	// Opengl Initialisations //
-	
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_RGBA);
-	
+
 	glutInitWindowPosition(100,100);
 
 	glutInitWindowSize(1000,1000);
-	glutCreateWindow("Draw Cube"); 
+	glutCreateWindow("Draw Cube");
     init();
-	
-	glEnable( GL_DEPTH_TEST );	
+
+	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_BLEND );
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	
-	
-	
-	glutDisplayFunc(display);  
+
+
+
+	glutDisplayFunc(display);
 	glutKeyboardFunc(&KeyPressed);
 	glutSpecialFunc(&SpecialKeyPressed);
 	glutReshapeFunc(reshape);
-	
+
 	// End of Initialisations  //
-	
-	current_n = 0;		
-	
+
+	current_n = 0;
+
 	glutMainLoop();
 }
 
@@ -435,7 +403,7 @@ void KeyPressed (unsigned char key, int x, int y)
 	key = tolower(key);
 	if(key == 27)
 		exit(0);
-	
+
 	switch(key)
 	{
 			case 'i':
@@ -450,7 +418,7 @@ void KeyPressed (unsigned char key, int x, int y)
 					  toChange = key;
 					  break;
 			case 'p': show_cloud = !show_cloud;
-					  break;	
+					  break;
 			case 'n':
 					box_no = (box_no + 1) % n;
 					break;
@@ -462,32 +430,32 @@ void KeyPressed (unsigned char key, int x, int y)
 					set_next_level();
 					break;
 			case ',':
-				angy = (angy - 11 + 360)%360 ;	
+				angy = (angy - 11 + 360)%360 ;
 				glutPostRedisplay();
 				break;
 			case '.':
-				angy = (angy + 11)%360 ;	
+				angy = (angy + 11)%360 ;
 				glutPostRedisplay();
 				break;
-				
+
 			case '[':
-				angz = (angz - 11 + 360)%360 ;	
+				angz = (angz - 11 + 360)%360 ;
 				glutPostRedisplay();
 				break;
 			case ']':
-				angz = (angz + 10)%360 ;	
+				angz = (angz + 10)%360 ;
 				glutPostRedisplay();
 				break;
-				
+
 			case 'l':
-				angx = (angx - 11 + 360)%360 ;	
+				angx = (angx - 11 + 360)%360 ;
 				glutPostRedisplay();
 				break;
 			case ';':
-				angx = (angx + 11)%360 ;	
+				angx = (angx + 11)%360 ;
 				glutPostRedisplay();
-				break;	
-				
+				break;
+
 			case 't':
 				show_texture = !show_texture;
 				if(show_texture){
@@ -495,15 +463,15 @@ void KeyPressed (unsigned char key, int x, int y)
 					pt_scx = pt_scy = pt_scz = g_disp->resolution;
 
 					grid_length = g_disp->length; grid_width = g_disp->width; grid_height = g_disp->height;
-	
+
 					set_cuboid_c(gr, 0, 0, 0, grid_length, grid_width, grid_height);
 				}
 				else{
 					c_list = c_list_no_texture;
-					pt_scx = pt_scy = pt_scz = g->resolution;	
-				
+					pt_scx = pt_scy = pt_scz = g->resolution;
+
 					grid_length = g->length; grid_width = g->width; grid_height = g->height;
-	
+
 					set_cuboid_c(gr, 0, 0, 0, grid_length, grid_width, grid_height);
 
 				}
@@ -512,31 +480,31 @@ void KeyPressed (unsigned char key, int x, int y)
 
 			default :
 					break;
-					
-			
+
+
 		}
    glutPostRedisplay();
 }
 
-void SpecialKeyPressed(GLint key, GLint x, GLint y) 
+void SpecialKeyPressed(GLint key, GLint x, GLint y)
 {
  double xpos = 0.0,
 	    ypos = 0.0,
 	    zpos = 0.0;
 
  switch (key)
-      {   
+      {
        case GLUT_KEY_UP:
-							ypos += 10.1; 
+							ypos += 10.1;
 							break;
        case GLUT_KEY_DOWN:
-							ypos -= 10.1; 
+							ypos -= 10.1;
 							break;
        case GLUT_KEY_LEFT:
-							xpos -= 10.1;  
+							xpos -= 10.1;
 							break;
        case GLUT_KEY_RIGHT:
-							xpos += 10.1;                
+							xpos += 10.1;
 							break;
        case GLUT_KEY_PAGE_DOWN:
 							zpos -= 10.1;
@@ -544,9 +512,9 @@ void SpecialKeyPressed(GLint key, GLint x, GLint y)
        case GLUT_KEY_PAGE_UP:
 							zpos+=10.1;
 	                	    break;
-       
-      }	
-      
+
+      }
+
       switch(toChange)
       {
 		   case 'e':
@@ -566,7 +534,7 @@ void SpecialKeyPressed(GLint key, GLint x, GLint y)
 					Ux += xpos;
 					Uy += ypos;
 					Uz += zpos;
-					break;			
+					break;
 		}
       glutPostRedisplay();
 }

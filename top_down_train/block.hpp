@@ -1,6 +1,10 @@
 #ifndef BLOCK_HPP
 #define BLOCK_HPP
 
+// objects of the Block class represent cuboids in space
+// The diagonal points of this cuboid are:
+//   (x, y, z)
+//   (x + length, y + width, z + height)
 class Block
 {
 	public:
@@ -38,6 +42,13 @@ class Block
 		length = l_i;
 		width = w_i;
 		height = h_i;
+	}
+
+	void display_extents()
+	{
+        cout << "block extent x " << this->x << " " << (this->x + this->length) << endl;
+        cout << "block extent y " << this->y << " " << (this->y + this->width) << endl;
+        cout << "block extent z " << this->z << " " << (this->z + this->height) << endl;
 	}
 };
 

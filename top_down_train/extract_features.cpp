@@ -89,15 +89,15 @@ void print_aspect_ratio(string model_name, Block &b, int model_number, bool is_s
 	//model_name += "_";
 	//model_name += to_string(model_number);
 
-	cout << model_name << " " << model_number << " ";
+	// cout << model_name << " " << model_number << " ";
 
-	cout << (double)l_1/(double)l << " " << (double)l_2/(double)l << " " << (double)l_2/(double)l_1 << " ";
+	// cout << (double)l_1/(double)l << " " << (double)l_2/(double)l << " " << (double)l_2/(double)l_1 << " ";
 
-	if(!is_splited)
-		cout << "-1" << "\n";
-	else{
-
-		cout << "1 ";
+	if (!is_splited) {
+		// cout << "-1" << "\n";
+	}
+	else {
+		// cout << "1 ";
 
 		double x = (double)( part1.x - b.x ) / (double)b.length;
 		double y = (double)( part1.y - b.y ) / (double)b.width;
@@ -107,7 +107,7 @@ void print_aspect_ratio(string model_name, Block &b, int model_number, bool is_s
 		double w = (double)( part1.width ) / (double)b.width;
 		double h = (double)( part1.height ) / (double)b.height;
 
-		cout << x << " " << y << " " << z << " " << l << " " << w << " " << h << " ";
+		// cout << x << " " << y << " " << z << " " << l << " " << w << " " << h << " ";
 
 		x = (double)( part2.x - b.x ) / (double)b.length;
 		y = (double)( part2.y - b.y ) / (double)b.width;
@@ -117,9 +117,9 @@ void print_aspect_ratio(string model_name, Block &b, int model_number, bool is_s
 		w = (double)( part2.width ) / (double)b.width;
 		h = (double)( part2.height ) / (double)b.height;
 
-		cout << x << " " << y << " " << z << " " << l << " " << w << " " << h;
+		// cout << x << " " << y << " " << z << " " << l << " " << w << " " << h;
 
-		cout << "\n";
+		// cout << "\n";
 	}
 }
 
@@ -357,7 +357,7 @@ string extract_name(char * filename)
 	split(fields_temp, temp, is_any_of("/") );
 	split(fields, fields_temp[fields_temp.size() - 1], is_any_of(".") );
 
-	cerr << "Extracted model name :" << fields[0]<<"\n";
+	// cerr << "Extracted model name :" << fields[0]<<"\n";
 
 	return fields[0];
 
