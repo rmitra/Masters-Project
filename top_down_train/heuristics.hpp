@@ -116,11 +116,4 @@ void trim_boxes(vector<Block> &block_list, grid* g)
     }
 }
 
-// returns the center of gravity of a block given its extents
-void center_of_gravity(Block& b, int &x, int &y, int &z) {
-    x = b.x + (double)b.length/2;
-    y = b.y + (double)b.width/2;
-    z = b.z + (double)b.height/2;
-}
-
 #endif

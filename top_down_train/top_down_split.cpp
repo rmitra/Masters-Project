@@ -15,6 +15,8 @@ using namespace std;
 
 #define VOXEL_THRESHOLD 0.90
 
+#define USING_VOL_AND_RMSE 1
+
 double VOL_THRESHOLD;
 double BLOCK_SIZE_THRESHOLD;
 
@@ -22,6 +24,8 @@ int start;
 
 #include "rmse.cpp"
 
+// in the report, according to algorithm 4.2, we fill up the arrays in this function
+// but in this implementation, the arrays have already been filled up by the calculate_gain_red function
 double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], double vol_l[], double vol_u[], int &er_cutIndex, double &less_er_vol, bool &inside_loop)
 {
 	bool is_lower = false;
@@ -29,11 +33,12 @@ double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], doub
 	int temp_cut_lower = -1;
 	int temp_cut_upper = -1;
 
-	double max_rmse_jump = -1;
-	double prev_rmse = 10000;
-	double min_rmse_lower_th = 100000.0;
-	double min_rmse_upper_th = 100000.0;
+	double max_rmse_jump = -1; // anything < 0 will do
+	double prev_rmse = 10000; // any large number will do
+	double min_rmse_lower_th = 100000.0; // any large number will do
+	double min_rmse_upper_th = 100000.0; // any large number will do
 
+	// first compute the minimum elements of er_l and er_u
 	for (int i = begin + 4; i <= end - 4; i++) {
 		if(er_l[i] < min_rmse_lower_th)
 			min_rmse_lower_th = er_l[i];
@@ -42,6 +47,12 @@ double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], doub
 			min_rmse_upper_th = er_u[i];
 	}
 
+	// for (int i = begin + 4; i <= end - 5; i++) {
+	// 	cout << er_l[i] << "___" << er_u[i] << " ";
+	// } cout << endl;
+
+	// then find the i at which the jumps in er_l and -1*er_u are maximised
+	// with the condition that er_l or er_u are within a threshold of the min_rmse
 	for (int i = begin + 4; i <= end - 5; i++) {
 		if (er_l[i+1] > er_l[i] && er_l[i] <= min_rmse_lower_th + 0.03) {
 			if (er_l[i] < prev_rmse && er_l[i+1] - er_l[i] > max_rmse_jump - 0.03) {
@@ -49,7 +60,6 @@ double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], doub
 				temp_cut_lower = i;
 				is_lower = true;
 				prev_rmse = er_l[i];
-
 				inside_loop = true;
 			}
 		}
@@ -65,12 +75,15 @@ double get_min_rmse_split(int begin, int end, double er_l[], double er_u[], doub
 		}
 	}
 
+	// cout << "about to return from get_min_rmse_split, inside_loop " << inside_loop << endl;
 	if (inside_loop) {
 		er_cutIndex = is_lower ? temp_cut_lower : temp_cut_upper;
-		if (er_l[er_cutIndex] < er_u[er_cutIndex])
+		if (er_l[er_cutIndex] < er_u[er_cutIndex]) {
 			return er_l[er_cutIndex];
-		else
+		}
+		else {
 			return er_u[er_cutIndex];
+		}
 	}
 	else {
 		less_er_vol = -1.0;
@@ -117,6 +130,8 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 
 	Block b;
 
+	// The calls to cal_min_max_3D are done for the volume heuristic
+	// The calls to get_rmse_3D are for the RMSE heuristic, in case the volume heuristic fails
 	for(int i = begin; i <= end; i++) {
 		if(plane == 0)
 		{
@@ -156,6 +171,8 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 			er_u[i+1] = get_rmse_3D(g, b, kdtree_grid, false);
 		}
 
+#if USING_VOL_AND_RMSE
+		// volume heuristic for splitting - compute the ratio of net volume after splitting to volume before splitting
 		double u_vol = (max_x_u - min_x_u + 1) * (max_y_u - min_y_u + 1) * (max_z_u - min_z_u + 1);
 		double l_vol = (max_x_l - min_x_l + 1) * (max_y_l - min_y_l + 1) * (max_z_l - min_z_l + 1);
 
@@ -168,28 +185,32 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 			min_red = red;
 			red_cutIndex = i;
 		}
+#endif
 	}
 
+	// for (int i = begin; i <= end; i++) {
+	// 	cout << er_l[i] << " " << er_u[i] << endl;
+	// }
+
+#if USING_VOL_AND_RMSE
+	// We use the value of min_red to choose between using the volume heuristic and the RMSE heuristic
 	double gain;
-
-	// cerr<<"Min red :"<<min_red<<" index : "<<red_cutIndex<<"\n";
-
 	if (min_red >= 0.0 && min_red < VOL_THRESHOLD)
 	{
+		// Use the volume heuristic directly
 		gain = min_red;
 		is_red = true;
 		less_er_vol = -1.0;
 	}
 	else
 	{
+		// Volume heuristic not good enough, use RMSE
 		inside_loop = false;
 		gain = get_min_rmse_split(0, end + begin, er_l, er_u, vol_l, vol_u, er_cutIndex, less_er_vol, inside_loop);
-		// cerr<<"MAX RMSE SECOND DERIVATIVE :"<<gain<<"\n";
 		is_red = false;
 	}
 
 	if (inside_loop) {
-		// cerr<<"RMSE CUT INDEX :"<<er_cutIndex<<"\n";
 		if(is_red)
 			cutIndex = red_cutIndex;
 		else
@@ -198,7 +219,15 @@ double calculate_gain_red(grid * g, int plane, int x, int y, int z, int length, 
 	}
 	else
 		return -1.0;
-
+#else
+	// Directly using only the RMSE
+	inside_loop = false;
+	double gain = get_min_rmse_split(0, end+begin, er_l, er_u, vol_l, vol_u, er_cutIndex, less_er_vol, inside_loop);
+	cutIndex = er_cutIndex;
+	is_red = true;
+	// cout << "plane " << plane << " cutIndex " << cutIndex << " gain " << gain << endl;
+	return (inside_loop ? gain : -1);
+#endif
 }
 
 // plane has values 0 for xz, 1 for xy and 2 for yz  //
@@ -209,8 +238,8 @@ double find_red(grid *g, Block &parent, int plane, int &cutIndex, bool &is_red, 
 	return (gain_red >= 0 ? gain_red : -1);
 }
 
-bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &final_cutIndex, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid){
-
+bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &final_cutIndex, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid)
+{
 	int cutIndex_0, cutIndex_1, cutIndex_2;
 
 	double min_gain_red = 100000;	// Any Big Number //
@@ -227,59 +256,57 @@ bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &
 		if (!is_red_0 && !is_red_1 && !is_red_2) {
 			double min_err = gain_red_0;
 
-			if(gain_red_1 < min_err)
+			if (gain_red_1 < min_err)
 				min_err = gain_red_1;
 
-			if(gain_red_2 < min_err)
+			if (gain_red_2 < min_err)
 				min_err = gain_red_2;
 
 			double allowance = 0.001;
 
-			if(min_err < 0.0)
+			if (min_err < 0.0)
 				return false;
 
 			double max_vol = -1.0;
 
-			if(gain_red_0 < min_err + allowance ){// && vol_0 > max_vol){
+			if (gain_red_0 < min_err + allowance) {// && vol_0 > max_vol){
 				plane = 0;
 				final_cutIndex = cutIndex_0;
 				max_vol = vol_0;
 			}
 
-			if(gain_red_1 < min_err + allowance){// && vol_1 > max_vol){
+			if (gain_red_1 < min_err + allowance) {// && vol_1 > max_vol){
 				plane = 1;
 				final_cutIndex = cutIndex_1;
 				max_vol = vol_1;
 			}
 
-			if(gain_red_2 < min_err + allowance){// && vol_2 > max_vol){
+			if (gain_red_2 < min_err + allowance) {// && vol_2 > max_vol){
 				plane = 2;
 				final_cutIndex = cutIndex_2;
 				max_vol = vol_2;
 			}
 		}
-		else{
-			if(is_red_0 == true){
+		else {
+			if (is_red_0 == true) {
 				min_gain_red = gain_red_0, plane = 0, final_cutIndex = cutIndex_0;
 			}
 
-			if(is_red_1 == true){
+			if (is_red_1 == true) {
 				if(gain_red_1 < min_gain_red){
 					min_gain_red = gain_red_1, plane = 1, final_cutIndex = cutIndex_1;
 				}
 			}
-			if(is_red_2 == true){
+			if (is_red_2 == true) {
 				if(gain_red_2 < min_gain_red){
 					min_gain_red = gain_red_2, plane = 2, final_cutIndex = cutIndex_2;
 				}
 			}
 		}
 	}
-	else{
+	else {
 		return false;
 	}
-
-	// cerr<<"Plane: "<<plane<<"  cutPoint: "<<final_cutIndex<<"\n";
 
 	int min_x_l, min_y_l, min_z_l, max_x_l, max_y_l, max_z_l;
 	int min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u;
@@ -299,11 +326,6 @@ bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &
 		cal_min_max_3D( g, parent.x + final_cutIndex + 1, parent.y, parent.z, parent.x + parent.length, parent.y + parent.width, parent.z + parent.height, plane, min_x_u, min_y_u, min_z_u, max_x_u, max_y_u, max_z_u);
 	}
 
-
-	// cerr<<"Lower Block: "<<min_x_l<<" "<<min_y_l<<"  "<<min_z_l<<"  "<<max_x_l<<"  "<<max_y_l<<"  "<<max_z_l<<"\n";
-	// cerr<<"Upper Block: "<<min_x_u<<" "<<min_y_u<<"  "<<min_z_u<<"  "<<max_x_u<<"  "<<max_y_u<<"  "<<max_z_u<<"\n";
-
-	//if(min_gain < GAIN_THRESHOLD){
 	ch1.x = min_x_l, ch1.y = min_y_l, ch1.z = min_z_l;
 	ch1.length = (max_x_l - min_x_l + 1), ch1.width = (max_y_l - min_y_l + 1), ch1.height = (max_z_l - min_z_l + 1);
 
@@ -311,7 +333,6 @@ bool partition(grid *g, Block &parent, Block &ch1, Block &ch2, int &plane, int &
 	ch2.length = (max_x_u - min_x_u + 1), ch2.width = (max_y_u - min_y_u + 1), ch2.height = (max_z_u - min_z_u + 1);
 
 	return true;
-	// }
 }
 
 
@@ -341,7 +362,8 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 
 	parent.push(tree_itr);
 
-	while (!s.empty()) {// && loop_count < 100){
+	while (!s.empty() && loop_count < 20) {
+	// while (!s.empty()) {
 		loop_count++;
 
 		Block top = s.top();
@@ -349,8 +371,6 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 
 		tree_itr = parent.top();
 		parent.pop();
-
-		// cerr<<"Tree Itr :"<<tree_itr<<"\n";
 
 		tree[tree_itr].x = top.x, tree[tree_itr].y = top.y, tree[tree_itr].z = top.z;
 		tree[tree_itr].length = top.length, tree[tree_itr].width = top.width, tree[tree_itr].height = top.height;
@@ -361,8 +381,9 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 		double rmse_3d = get_rmse_3D(g, top, kdtree_grid, true);
 		Block part1, part2;
 
-		if (rmse_3d > rmse_3d_thresh) { // && size_frac_l > BLOCK_SIZE_THRESHOLD && size_frac_w > BLOCK_SIZE_THRESHOLD && size_frac_h > BLOCK_SIZE_THRESHOLD){
+		if (rmse_3d > rmse_3d_thresh) {
 			bool val = partition(g, top, part1, part2, plane, cut_index, kdtree_grid);
+			// cout << "cut index " << cut_index << endl;
 			if (val) {
 				s.push(part1);
 				parent.push(2 * tree_itr);

@@ -1,5 +1,7 @@
 /* to voxelize point cloud */
 
+#define LIMIT 100000
+
 #include <algorithm>
 #include <fstream>
 #include <pcl/features/normal_3d.h>
@@ -51,7 +53,7 @@ vector<Block> split_driver(char* filename, pcl::PointCloud<pcl::PointXYZRGB>::Pt
 	Block b(0, 0, 0, g->length, g->width, g->height);
 
 	vector<Block> decom;
-	vector<Block> tree(20000);
+	vector<Block> tree(LIMIT);
 
 	decom = top_split(g, b, rmse_3d_thresh, filename, ft_dir_name, kdtree_grid, tree);
 

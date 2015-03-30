@@ -90,9 +90,7 @@ using namespace std;
 double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_grid, bool print_info)
 {
 	double sum_error = 0.0;
-
 	int N = 0;
-
 	for (int i = b.x; i < b.x + b.length; i++) {
 		for (int j = b.y; j < b.y + b.width; j++) {
 			for (int k = b.z; k < b.z + b.height; k++) {
@@ -159,14 +157,16 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 	}
 
 	double rmse;
-
-	if (N == 0)
+	if (N == 0) {
+		cout << "no used voxels so rmse = 0" << endl;
 		rmse = 0;
+	}
 	else {
 		double mean_error = sum_error / (double)N;
 		rmse = pow(mean_error, 0.5);
 	}
 
+	cout << "rmse = " << rmse << endl;
 	return rmse;
 }
 

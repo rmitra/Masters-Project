@@ -51,13 +51,7 @@ void compute_normal(pcl::PointCloud<pcl::PointXYZRGB>::Ptr model, pcl::PointClou
   norm_est.setInputCloud (m_xyz);
   norm_est.compute (*model_normals);
 
-  cerr << "Normals calculated. ";
-  
- /* for(int i = 0; i < model_normals->size(); i++){
-	cerr<<model_normals->points[i].normal_x<<" "<<model_normals->points[i].normal_y<<" "<<model_normals->points[i].normal_z<<"\n";
-  }	
-*/
-
+  cout << "Normals calculated " << endl;
 }
 
 

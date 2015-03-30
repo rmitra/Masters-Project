@@ -13,7 +13,7 @@
 #include "grid.hpp"
 #include "draw_helper.cpp"
 
-#define LIMIT 20000
+#define LIMIT 100000
 
 
 using namespace std;

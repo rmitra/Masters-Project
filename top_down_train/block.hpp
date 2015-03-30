@@ -50,6 +50,18 @@ class Block
         cout << "block extent y " << this->y << " " << (this->y + this->width) << endl;
         cout << "block extent z " << this->z << " " << (this->z + this->height) << endl;
 	}
+
+	// returns the center of gravity of a block given its extents
+	// this is just the centroid of the block
+	void center_of_gravity(double &x, double &y, double &z) {
+	    x = this->x + (double)this->length/2;
+	    y = this->y + (double)this->width/2;
+	    z = this->z + (double)this->height/2;
+	}
+
+	// volume of the block
+	// since we are assuming constant density, we can use this as the mass of the block
+	inline long volume() { return length * width * height; }
 };
 
 #endif
