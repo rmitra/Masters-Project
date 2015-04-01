@@ -53,9 +53,9 @@ class Block
 
 	// returns the center of gravity of a block given its extents
 	// this is just the centroid of the block
-	void center_of_gravity(double &x, double &y, double &z) {
+	void find_center_of_gravity(double &x, double &y, double &z) {
 	    x = this->x + (double)this->length/2;
-	    y = this->y + (double)this->width/2;
+	    y = this->y + (double)this->height/2;
 	    z = this->z + (double)this->height/2;
 	}
 

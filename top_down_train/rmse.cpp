@@ -158,7 +158,7 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 
 	double rmse;
 	if (N == 0) {
-		cout << "no used voxels so rmse = 0" << endl;
+		// cout << "no used voxels so rmse = 0" << endl;
 		rmse = 0;
 	}
 	else {
@@ -166,7 +166,7 @@ double get_rmse_3D(grid * g, Block &b, pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree_g
 		rmse = pow(mean_error, 0.5);
 	}
 
-	cout << "rmse = " << rmse << endl;
+	// cout << "rmse = " << rmse << endl;
 	return rmse;
 }
 

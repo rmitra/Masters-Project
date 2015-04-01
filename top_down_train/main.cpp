@@ -38,6 +38,7 @@ int main(int argc, char **argv)
 	char directory_name[14] = "../../feature";
 	vector<Block> block_list = split_driver(argv[1], cloud, cloud_normals, g, min, max, length, width, height, resolution, directory_name);
 
+	bool balanced = check_center_of_gravity_in_base(block_list);
 	// trim_boxes(block_list, g);
 
 	// grid used for displaying with OpenGL

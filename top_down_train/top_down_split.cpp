@@ -15,6 +15,7 @@ using namespace std;
 
 #define VOXEL_THRESHOLD 0.90
 
+// set this to 1 (true) if using both the volume heuristic and the RMSE heuristic
 #define USING_VOL_AND_RMSE 1
 
 double VOL_THRESHOLD;
@@ -362,8 +363,8 @@ vector<Block> top_split(grid *g, Block init, double rmse_3d_thresh, char *filena
 
 	parent.push(tree_itr);
 
-	while (!s.empty() && loop_count < 20) {
-	// while (!s.empty()) {
+	// while (!s.empty() && loop_count < 20) {
+	while (!s.empty()) {
 		loop_count++;
 
 		Block top = s.top();
