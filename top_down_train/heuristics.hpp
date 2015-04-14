@@ -122,7 +122,7 @@ struct triple {
     triple(double _x, double _y, double _z) : x(_x), y(_y), z(_z) {}
 };
 
-bool compareTriples(const triple &a, const triple &b) {
+bool compare_triples(const triple &a, const triple &b) {
     return (a.x < b.x) or
            (a.x == b.x and a.y < b.y) or
            (a.x == b.x and a.y == b.y and a.z < b.z);
@@ -137,6 +137,39 @@ double find_base_y_coordinate(vector<Block> &block_list)
     for (auto itr = block_list.begin() ; itr != block_list.end() ; itr++) {
         if (itr->y < min_y) {
             min_y = itr->y;
+        }
+    }
+    return min_y;
+}
+
+double find_top_y_coordinate(vector<Block> &block_list)
+{
+    double min_y = block_list[0].y;
+    for (auto itr = block_list.begin() ; itr != block_list.end() ; itr++) {
+        if (itr->y > min_y) {
+            min_y = itr->y;
+        }
+    }
+    return min_y;
+}
+
+double find_base_z_coordinate(vector<Block> &block_list)
+{
+    double min_y = block_list[0].z;
+    for (auto itr = block_list.begin() ; itr != block_list.end() ; itr++) {
+        if (itr->z < min_y) {
+            min_y = itr->z;
+        }
+    }
+    return min_y;
+}
+
+double find_top_z_coordinate(vector<Block> &block_list)
+{
+    double min_y = block_list[0].z;
+    for (auto itr = block_list.begin() ; itr != block_list.end() ; itr++) {
+        if (itr->z > min_y) {
+            min_y = itr->z;
         }
     }
     return min_y;
@@ -186,7 +219,7 @@ void find_convex_hull(vector<triple> &points, vector<triple> &result)
     if (points.size() <= 1)
         return;
 
-    sort(points.begin(), points.end(), compareTriples);
+    sort(points.begin(), points.end(), compare_triples);
 
     // Build lower hull
     for (auto p : points) {
@@ -273,10 +306,103 @@ bool is_point_inside_polygon(triple &p, vector<triple> &g)
     return is_inside;
     // high-level explanation: we send a ray parallel to the z-axis and look at each edge and, if the point is within the scope
     // of the y-coordinates of the edge, 
-    // explanation: the if condition has two parts:
+    // explanation: the if condition has two parts: either the ray does not intersect the edge, or it does and the point is
+    // to the left of the edge
 }
 
-bool check_center_of_gravity_in_base(vector<Block> &block_list)
+// Check if the point (x, b.y + b.height, z) lies on the top face of block b.
+// This is a special case of is_point_inside_polygon.
+static inline bool check_point_in_top_face(double x, double z, Block& b)
+{
+    return (b.x <= x and x <= b.x + b.length) and (b.z <= z and z <= b.z + b.height);
+}
+
+// This function is called only when we know that b1 is on top of b2.
+// This function checks if the bottom face of b1 overlaps with
+// the top face of b2.
+bool check_if_faces_overlap(Block &b1, Block &b2)
+{
+    bool x1z1 = check_point_in_top_face(b1.x, b1.z, b2);
+    bool x1z2 = check_point_in_top_face(b1.x + b1.length, b1.z, b2);
+    bool x2z1 = check_point_in_top_face(b1.x, b1.z + b1.height, b2);
+    bool x2z2 = check_point_in_top_face(b1.x + b1.length, b1.z + b1.height, b2);
+    return x1z1 or x1z2 or x2z1 or x2z2;
+}
+
+// return true if one of the base points of b1 is directly
+// on top of b2's top, or vice versa
+bool is_on_top_of(Block& b1, Block& b2)
+{
+    bool b1_on_top = b1.y == b2.y + b2.width;
+    bool b2_on_top = b2.y == b1.y + b1.width;
+    if (not(b1_on_top or b2_on_top)) {
+        return false;
+    }
+    else {
+        return b1_on_top ? check_if_faces_overlap(b1, b2) : check_if_faces_overlap(b2, b1);
+    }
+}
+
+// update touches_ground for blocks in a block list
+// algorithm: sort the blocks by y-coordinate and start from the lowest block
+void update_touches_ground(vector<Block> &block_list)
+{
+    // base of the entire building
+    double base = find_base_y_coordinate(block_list);
+
+    // build a map of top y coordinate to blocks, sorted by the keys
+    // note: we map to the index in the block_list instead of the block itself
+    // as this is more efficient
+    map<double, vector<int> > y_to_blocks;
+    for (int i = 0 ; i < block_list.size() ; i++) {
+        double y = block_list[i].y + block_list[i].width;
+        y_to_blocks[y].push_back(i);
+    }
+    // perform the update
+    for (auto &itr : y_to_blocks) {
+        // cout << "height: " << itr.first << endl;
+        for (auto &itr2 : itr.second) {
+            if (block_list[itr2].y == base) {
+                block_list[itr2].touches_ground = true;
+            }
+            else {
+                // check if it rests on a block which recursively touches the ground
+                // do this for each one of the blocks on which it rests
+                double curr_base = block_list[itr2].y;
+                auto itr3 = y_to_blocks.find(curr_base);
+                if (itr3 != y_to_blocks.end()) {
+                    // it does rest on some blocks, so check each one of them
+                    for (auto const &itr4 : itr3->second) {
+                        if (block_list[itr4].touches_ground and check_if_faces_overlap(block_list[itr2], block_list[itr4])) {
+                            block_list[itr2].touches_ground = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// For a building to be stable, check_center_of_gravity_inside() should return true
+// And also, each block must either touch the ground or lie on a block which
+// recursively touches the ground
+bool check_stability(vector<Block> &block_list)
+{
+    update_touches_ground(block_list);
+    // check for blocks which still have touches_ground == false
+    for (auto const &block : block_list) {
+        // cout << "block at " << block.y << " " << (block.touches_ground ? "touches" : "doesn't touch") << " ground\n";
+        if (not block.touches_ground) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Check if the center of gravity is inside the convex hull the bases
+// of all the blocks which directly touch the ground
+bool check_center_of_gravity_inside(vector<Block> &block_list)
 {
     triple cog;
     find_center_of_gravity(block_list, cog);
